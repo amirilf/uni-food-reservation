@@ -3,22 +3,9 @@ import requests
 from PIL import Image
 from io import BytesIO
 import hashlib
-import shutil
 from utility.variables import CAPTCHA_URL, CAPTCAH_CROP_BOX
-
-def create_dir(dir:str, only_check:bool) -> None:
-    
-    if os.path.exists(dir):
-        if only_check:
-            return
-        else:
-            shutil.rmtree(dir)    
-    os.makedirs(dir)
-
-def get_hash(path):
-    with Image.open(path) as img:
-        img = img.convert('RGB')
-        return hashlib.md5(img.tobytes()).hexdigest()
+from utility.file import create_dir
+from utility.hash import get_img_hash_by_path
  
 def find_duplicates(dir:str):
     
@@ -30,7 +17,7 @@ def find_duplicates(dir:str):
         if image_name.endswith('.png'):
             
             image_path = os.path.join(dir, image_name)
-            image_hash = get_hash(image_path)
+            image_hash = get_img_hash_by_path(image_path)
 
             if image_hash in hashes:
                 print(f"Duplicate found: {image_name} is the same as {hashes[image_hash]}")
@@ -52,7 +39,7 @@ def load_hashes(dir:str, hashes:list) -> int:
         if file_name.endswith('.png'):
             
             image_path = os.path.join(dir, file_name)
-            image_hash = get_hash(image_path)
+            image_hash = get_img_hash_by_path(image_path)
             
             if image_hash not in hashes:
                 hashes.append(image_hash)
@@ -61,13 +48,9 @@ def load_hashes(dir:str, hashes:list) -> int:
     print(counter, "hashes are added.")
     return counter
 
-def collect_till_death(dir:str, only_check_dir:bool, certainty_checker:int) -> None:
+def collect_till_death(dir:str, certainty_checker:int = 100) -> None:
     
-    '''
-        `only_check_dir = true` -> avoid removing the dir if existed (load hashes of existed images)
-    '''
-    
-    create_dir(dir,only_check_dir)        
+    create_dir(dir)        
     hashes = []
     amount = load_hashes(dir, hashes)
     certainty = 0
