@@ -6,8 +6,9 @@ import hashlib
 from utility.variables import CAPTCHA_URL, CAPTCAH_CROP_BOX
 from utility.file import create_dir
 from utility.hash import get_img_hash_by_path
- 
-def find_duplicates(dir:str):
+
+
+def find_duplicates(dir:str) -> None:
     
     hashes = {}
     duplicates = []

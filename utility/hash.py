@@ -1,9 +1,9 @@
 import hashlib
-from PIL import Image, ImageFile
+from PIL import Image
 
 def get_img_hash_by_path(path: str) -> str:
     """
-    Generate an MD5 hash for an image by file path.\n
+    Generate an MD5 hash for image by file path.\n
     Helps to compare images together and find duplicates in some scenarios.
     
     Args
@@ -15,9 +15,9 @@ def get_img_hash_by_path(path: str) -> str:
         img = img.convert('RGB')
         return hashlib.md5(img.tobytes()).hexdigest()
 
-def get_img_hash_by_object(img: ImageFile.ImageFile) -> str:
+def get_img_hash_by_object(img: Image.Image) -> str:
     """
-    Generate an MD5 hash for an image object.\n
+    Generate an MD5 hash for image object.\n
     Helps to compare images together and find duplicates in some scenarios.
 
     Args
