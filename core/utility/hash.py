@@ -1,6 +1,6 @@
 import hashlib
 from PIL import Image
-from .file import get_image_by_path
+from core.utility.file import get_image_by_path
 
 def get_img_hash_by_path(path: str) -> str:
     """

@@ -3,7 +3,7 @@ This is the main script of the captcha package.
 """
 
 from PIL import Image
-from .process import find_first_digit, find_second_digit, find_third_digit, find_forth_digit, extract_digits_from_captcha,get_digit_densities_list
+from core.captcha.process import find_first_digit, find_second_digit, find_third_digit, find_forth_digit, extract_digits_from_captcha,get_digit_densities_list
 
 def solve(captcha_image : Image.Image) -> int: 
 

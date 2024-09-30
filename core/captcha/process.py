@@ -3,7 +3,7 @@ This script is used to process captchas to find a detection pattern.
 """
 
 from PIL import Image
-from utility.variables import *
+from core.utility.variables import *
 
 def extract_digits_from_captcha(captcha_image: Image.Image) -> list[Image.Image]:
     """

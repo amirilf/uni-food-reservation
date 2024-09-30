@@ -8,9 +8,9 @@ from io import BytesIO
 import os
 import requests
 import hashlib
-from utility.variables import CAPTCHA_URL, CAPTCAH_CROP_BOX
-from utility.file import create_dir, get_image_by_path
-from utility.hash import get_img_hash_by_path, get_img_hash_by_object
+from core.utility.variables import CAPTCHA_URL, CAPTCAH_CROP_BOX
+from core.utility.file import create_dir, get_image_by_path
+from core.utility.hash import get_img_hash_by_path, get_img_hash_by_object
 from core.captcha.process import extract_digits_from_captcha
 
 def find_duplicates(dir: str) -> None:
