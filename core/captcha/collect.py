@@ -5,8 +5,8 @@ from io import BytesIO
 import hashlib
 from utility.variables import CAPTCHA_URL, CAPTCAH_CROP_BOX
 from utility.file import create_dir
-from utility.hash import get_img_hash_by_path
-
+from utility.hash import get_img_hash_by_path, get_img_hash_by_object
+from core.captcha.process import get_image_by_path, extract_digits_from_captcha
 
 def find_duplicates(dir:str) -> None:
     
@@ -81,3 +81,36 @@ def collect_till_death(dir:str, certainty_checker:int = 100) -> None:
             print("Failed to get image")
 
     print("Finished.")
+
+def seprate_digits_in_dirs() -> None:
+    """
+        Used when I wanted to seprate {ith} placed digits in seprated dirs to work with them
+        and find a way to recognize them.
+        
+        Also used hash to avoid adding duplicates.
+    """
+    
+    hashes = [[],[],[],[]]
+    counter = 1
+
+    create_dir("tmp/digits/1",False)
+    create_dir("tmp/digits/2",False)
+    create_dir("tmp/digits/3",False)
+    create_dir("tmp/digits/4",False)
+
+    for i in range(1,1001):
+        path = "../tmp/images/" + str(i) + ".png"
+        captcha = get_image_by_path(path)
+        images = extract_digits_from_captcha(captcha)
+        
+        for j in range(4):
+
+            img_hash = get_img_hash_by_object(images[j])
+            if img_hash not in hashes[j]:
+                save_path = f"tmp/digits/{j+1}/{counter}.png"
+                images[j].save(save_path, format="PNG")
+                counter += 1
+                hashes[j].append(img_hash)
+                print(i,j+1,"saved!")
+            else:
+                print(i,j+1,"duplicate found!")

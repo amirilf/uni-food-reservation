@@ -1,18 +1,11 @@
 import os
 import shutil
+from PIL import Image
 
 def create_dir(dir: str, only_check: bool = True) -> None:
     """
-    Create a directory at the specified path.
-
-    If the directory already exists:
-      - If `only_check` is True (default), the function does nothing.
-      - If `only_check` is False, it removes the existing directory and its contents before creating a new one.
-
-    Args
-    ----
-    `dir` : The path of the directory to create. This can be either a full path or a relative path.\n
-    `only_check` : The flag to specify removing strategy when dir is already existed.
+    Create a directory at the specified path. if already existed then checks `only_check`
+    if it's false then will remove and create that again.
     """
     
     if os.path.exists(dir):
@@ -21,3 +14,13 @@ def create_dir(dir: str, only_check: bool = True) -> None:
         else:
             shutil.rmtree(dir)    
     os.makedirs(dir)
+
+def get_image_by_path(image_path: str, make_rgb = True) -> Image.Image:
+    """
+        This method gets image path and returns image object.
+    """
+    
+    img = Image.open(image_path)
+    if make_rgb:
+        img = img.convert("RGB")
+    return img
