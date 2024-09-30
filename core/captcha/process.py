@@ -1,11 +1,8 @@
 """
-This script is used to process captchas to find a detection pattern.<br>
-So it's not a clean script to use, instead there is a `solver.py` which is the main script of the captcha package.
+This script is used to process captchas to find a detection pattern.
 """
 
 from PIL import Image
-
-from utility.file import get_image_by_path
 from utility.variables import *
 
 def extract_digits_from_captcha(captcha_image: Image.Image) -> list[Image.Image]:
@@ -231,15 +228,3 @@ def find_forth_digit(image_densities : list[float]) -> int:
                     return 7
                 return 3
             return 1
-
-def solve_captcha(image: Image.Image) -> list[float]:
-
-    digits = extract_digits_from_captcha(image)    
-
-    result = 0
-    result += find_first_digit(get_digit_densities_list(digits[0])) * 1000
-    result += find_second_digit(get_digit_densities_list(digits[1])) * 100
-    result += find_third_digit(get_digit_densities_list(digits[2])) * 10
-    result += find_forth_digit(get_digit_densities_list(digits[3]))
-    
-    print(result)

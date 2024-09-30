@@ -1,5 +1,5 @@
 """
-This file is used to collect and store captchas to work with them.<br>
+This script is used to collect and store captchas to work on them later.<br>
 Captchas are from : https://sfd.ui.ac.ir/UserControls/Captcha.ashx
 """
 
@@ -8,11 +8,10 @@ from io import BytesIO
 import os
 import requests
 import hashlib
-
 from utility.variables import CAPTCHA_URL, CAPTCAH_CROP_BOX
-from utility.file import create_dir
+from utility.file import create_dir, get_image_by_path
 from utility.hash import get_img_hash_by_path, get_img_hash_by_object
-from core.captcha.process import get_image_by_path, extract_digits_from_captcha
+from core.captcha.process import extract_digits_from_captcha
 
 def find_duplicates(dir: str) -> None:
     """
