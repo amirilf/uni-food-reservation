@@ -1,5 +1,9 @@
-from PIL import Image
+"""
+These methods are used to detect digit regions in a captcha image. those numbers in 
+utility.variables.DIGIT_COL_REGIONS are result of using these methods.
+"""
 
+from PIL import Image
 
 # COLS
 def find_white_cols(image_path: str) -> list[int]:
@@ -69,8 +73,7 @@ def find_surrounded_white_cols(cols: list[int]) -> list[int]:
     
     return res
 
-
-# ROWS
+# ROWS - useless but anyway
 def find_white_rows(image_path: str) -> list[int]:
     
     img = Image.open(image_path)
@@ -139,9 +142,3 @@ def find_surrounded_white_rows(rows: list[int]) -> list[int]:
         prev_white = cur
     
     return res
-    
-
-# Test
-for i in range(1, 1005):
-    non_white_cols = find_prev_white_cols(find_white_cols("tmp/images/" + str(i) + ".png"))
-    print(i,non_white_cols)
