@@ -1,4 +1,10 @@
+"""
+This script is used to process captchas to find a detection pattern.<br>
+So it's not a clean script to use, instead there is a `solver.py` which is the main script of the captcha package.
+"""
+
 from PIL import Image
+
 from utility.file import get_image_by_path
 from utility.variables import *
 
@@ -86,9 +92,9 @@ def get_digit_densities_list(digit_image: Image.Image) -> list[float]:
 """
     These find_{ith}_digit method have a simple pattern to find {ith} placed digit in captcha using its densities list.
     I know this is the worst way but I'm not interested in finding a better/optimal way 0-0
-        
+    
     Actually there is no need to calculate density at all, only knowing which parts have white pixel inside is
-    enough to recognize most of the cases but for some, it may be necessary to know the density based on the pattern like
+    enough to detect most of the cases but for some, it may be necessary to know the density based on the pattern like
     the 8 and 9 in first placed digit which is solved using its density, it also can be solved with using better areas to check but I'm tired.
 """
 def find_first_digit(image_densities : list[float]) -> int:    
@@ -237,7 +243,3 @@ def solve_captcha(image: Image.Image) -> list[float]:
     result += find_forth_digit(get_digit_densities_list(digits[3]))
     
     print(result)
-
-# Test
-for i in range(1,10):
-    solve_captcha(get_image_by_path(f"../tmp/images/{i}.png"))
