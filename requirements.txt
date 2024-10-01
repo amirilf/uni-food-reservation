@@ -1,11 +1,16 @@
 Package            Version
 ------------------ ---------
+beautifulsoup4     4.12.3
 certifi            2024.8.30
+cffi               1.17.1
 charset-normalizer 3.3.2
+cryptography       43.0.1
 idna               3.10
 pillow             10.4.0
 pip                22.0.2
+pycparser          2.22
 requests           2.32.3
 setuptools         59.6.0
+soupsieve          2.6
 urllib3            2.2.3
 wheel              0.37.1

@@ -1,7 +1,6 @@
 # URLs
 MAIN_URL = "https://sfd.ui.ac.ir"
 CAPTCHA_URL = MAIN_URL + "/UserControls/Captcha.ashx"
-CAPTCAH_CROP_BOX = (78, 9, 156, 34)
 LOGIN_URL = MAIN_URL + "/Login.aspx"
 
 # CAPTCHA
@@ -12,6 +11,7 @@ DIGIT_COL_REGIONS = [
     (40, 57),
     (60, 77),
 ]
+CAPTCHA_CROP_BOX = (78, 9, 156, 34)
 CAPTCHA_ROWS_RANGE = (0,25)
 DIGIT_ROWS = 25
 DIGIT_COLS = 18

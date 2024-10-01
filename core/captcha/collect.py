@@ -8,7 +8,7 @@ from io import BytesIO
 import os
 import requests
 import hashlib
-from core.utility.variables import CAPTCHA_URL, CAPTCAH_CROP_BOX
+from core.utility.variables import CAPTCHA_URL, CAPTCHA_CROP_BOX
 from core.utility.file import create_dir, get_image_by_path
 from core.utility.hash import get_img_hash_by_path, get_img_hash_by_object
 from core.captcha.process import extract_digits_from_captcha
@@ -85,7 +85,7 @@ def collect_till_death(dir: str, limit: int = 100) -> None:
 
             img = Image.open(BytesIO(response.content))
             img = img.convert("RGB")
-            img = img.crop(CAPTCAH_CROP_BOX)
+            img = img.crop(CAPTCHA_CROP_BOX)
             hash = hashlib.md5(img.tobytes()).hexdigest()
             
             if hash in hashes:
