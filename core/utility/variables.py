@@ -1,45 +1,40 @@
-#=====> URLs
+# Base URL
 MAIN_URL = "https://sfd.ui.ac.ir"
 
-# auth urls
+# Auth URLs
 LOGIN_URL = MAIN_URL + "/Login.aspx"
 CAPTCHA_URL = MAIN_URL + "/UserControls/Captcha.ashx"
 
-# callinun urls
+# Callinun URLs
 CALLINUN_URL = MAIN_URL + "/MyCullinan"
 PROFILE_URL = CALLINUN_URL + "/MyProfile.aspx"
 TRANSACTIONS_URL = CALLINUN_URL + "/MyTransaction.aspx"
 MESSAGES_URL = CALLINUN_URL + "/MyMessage.aspx"
 
-# reservation urls
+# Reservation URLs
 RESERVATION_URL = MAIN_URL + "/Reservation"
 SELF_URL = RESERVATION_URL + "/Reservation.aspx"
 YAS_URL = RESERVATION_URL + "/CafeteriaReservation.aspx"
 FORGET_URL = RESERVATION_URL + "/ForgotReceipt.aspx"
 
-# payment urls
+# Payment URLs
 PAYMENT_URL = MAIN_URL + "/ePay/ePay_Payment.aspx"
 PAYMENT_MIN = 1_000
 PAYMENT_MAX = 5_000_000
 
-#=====> CAPTCHA
-CAPTCHA_CROP_BOX = (78, 9, 156, 34) # captcha size is (78,25)
-DIGIT_COL_REGIONS = [
-    (0, 17),
-    (19, 36),
-    (40, 57),
-    (60, 77),
-]
-CAPTCHA_ROWS_RANGE = (0,25)
+# CAPTCHA settings
+CAPTCHA_CROP_BOX = (78, 9, 156, 34)  # Captcha size is (78, 25)
+DIGIT_COL_REGIONS = [(0, 17), (19, 36), (40, 57), (60, 77)]
+CAPTCHA_ROWS_RANGE = (0, 25)
 DIGIT_ROWS = 25
 DIGIT_COLS = 18
 PARTS_ROWS = 5
 PARTS_COLS = 3
-DENSITIES_SIZE = (int(DIGIT_ROWS / PARTS_ROWS), int(DIGIT_COLS / PARTS_COLS))
+DENSITIES_SIZE = (DIGIT_ROWS // PARTS_ROWS, DIGIT_COLS // PARTS_COLS)
 
-#=====> AUTH
+# Auth session headers
 AUTH_SESSION_HEADER = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',  # Windows 7 and Chrome
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
     'Accept-Language': 'en-US,en;q=0.9',
     'DNT': '1',
     'Upgrade-Insecure-Requests': '1',

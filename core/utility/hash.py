@@ -1,29 +1,32 @@
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric import padding
-from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives import serialization, padding, hashes
 import base64
 import hashlib
 from PIL import Image
 from core.utility.file import get_image_by_path
 
-def get_img_hash_by_path(path: str) -> str:
+def get_image_hash(path: str) -> str:
     """
-        This method gets an image path and return the image hash.<br>
-        This helps to compare images and find duplicates in some scenarios
+    Calculate the MD5 hash of an image file given its path.<br>
+    This helps to compare images and find duplicates.
     """
     
     return hashlib.md5(get_image_by_path(path).tobytes()).hexdigest()
 
-def get_img_hash_by_object(img: Image.Image) -> str:
+def get_image_hash_from_object(img: Image.Image) -> str:
     """
-        This method gets an image object and return the image hash.<br>
-        This helps to compare images and find duplicates in some scenarios<br>
+    Calculate the MD5 hash of an image object.<br>
+    This helps to compare images and find duplicates.
     """
     
-    img = img.convert('RGB') # to make sure its RGB
+    img = img.convert('RGB')  # Ensure the image is in RGB format
     return hashlib.md5(img.tobytes()).hexdigest()
 
-def encrypt_data(data, pub_key_str):
+def encrypt_data(data: str, pub_key_str: str) -> str:
+    """
+    Encrypt a string using a provided public key.<br>
+    Returns the encrypted result as a base64-encoded string.
+    """
+    
     public_key = serialization.load_pem_public_key(pub_key_str.encode())
     encrypted_data = public_key.encrypt(
         data.encode(),
