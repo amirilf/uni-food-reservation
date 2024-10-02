@@ -3,7 +3,11 @@ MAIN_URL = "https://sfd.ui.ac.ir"
 
 # Auth URLs
 LOGIN_URL = MAIN_URL + "/Login.aspx"
-CAPTCHA_URL = MAIN_URL + "/UserControls/Captcha.ashx"
+
+# User URLs
+USER_URL = MAIN_URL + "/UserControls"
+CAPTCHA_URL = USER_URL + "/Captcha.ashx"
+PROFILE_IMAGE_URL = USER_URL + "/UserImage.ashx"
 
 # Callinun URLs
 CALLINUN_URL = MAIN_URL + "/MyCullinan"

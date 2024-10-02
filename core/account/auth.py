@@ -3,17 +3,19 @@ from bs4 import BeautifulSoup
 from core.captcha.solve import solve_in_byte
 from core.utility.variables import LOGIN_URL, CAPTCHA_URL, AUTH_SESSION_HEADER, PROFILE_URL
 
-def get_page_or_exception(url: str, session: requests.Session) -> requests.Response:
+def get_page_or_exception(session: requests.Session, url: str) -> requests.Response:
     """
     Fetch a page using the authenticated session. Raise an exception if the session is not authenticated.
     """
 
     response = session.get(url)
-    
+    response.raise_for_status()
+
     if response.url == url:
         return response
-    
-    raise Exception(f"Session is not authenticated.\nReq URL: {url}\nRes URL: {response.url}")
+    elif response.url == LOGIN_URL:
+        raise Exception("Session is not authenticated.")
+    raise Exception("Error while fetching `" + url + "`.")
 
 def login(username: str, password: str) -> requests.Session:
     """
@@ -47,7 +49,7 @@ def logout(session: requests.Session) -> bool:
     """
     
     try:
-        response = get_page_or_exception(PROFILE_URL, session)
+        response = get_page_or_exception(session, PROFILE_URL)
     except Exception:
         return True  # Session is already expired
     
