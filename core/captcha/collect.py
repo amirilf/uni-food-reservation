@@ -1,24 +1,21 @@
 """
-This script is used to collect and store captchas to work on them later.<br>
-Captchas are from : https://sfd.ui.ac.ir/UserControls/Captcha.ashx
+Collect and store captchas for later processing from: https://sfd.ui.ac.ir/UserControls/Captcha.ashx
 """
 
-from PIL import Image
-from io import BytesIO
 import os
 import requests
 import hashlib
+from io import BytesIO
+from PIL import Image
 from core.utility.variables import CAPTCHA_URL, CAPTCHA_CROP_BOX
-from core.utility.file import create_dir, get_image_by_path
-from core.utility.hash import get_img_hash_by_path, get_img_hash_by_object
+from core.utility.file import create_directory, get_image_by_path
+from core.utility.hash import get_image_hash, get_image_hash_from_object
 from core.captcha.process import extract_digits_from_captcha
 
+
 def find_duplicates(dir: str) -> None:
-    """
-        This method is to find duplicate images in a directory.<br>
-        In this scenario it will check if there are duplicate captchas
-    """
-    
+    """Find and print duplicate images in a directory."""
+        
     hashes = {}
     duplicates = []
     
@@ -27,7 +24,7 @@ def find_duplicates(dir: str) -> None:
         if image_name.endswith('.png'):
             
             image_path = os.path.join(dir, image_name)
-            image_hash = get_img_hash_by_path(image_path)
+            image_hash = get_image_hash(image_path)
 
             if image_hash in hashes:
                 print(f"Duplicate found: {image_name} is the same as {hashes[image_hash]}")
@@ -35,17 +32,14 @@ def find_duplicates(dir: str) -> None:
             else:
                 hashes[image_hash] = image_name
 
-    if not duplicates:
-        print("No duplicates.")
-    else:
-        print("Found duplicates:", len(duplicates))
+    print("No duplicates." if not duplicates else f"Found duplicates: {len(duplicates)}")
  
 def load_hashes(dir: str, hashes: list) -> int:
     """
-        This method loads hashes of existed images in directory.<br>
-        In this scenario since the purpose is to add new captchas to last ones, it loads the old ones hashes.
+    Load existing image hashes from a directory.<br>
+    Return number of found images.
     """
-    
+        
     counter = 0
     
     for file_name in os.listdir(dir):
@@ -53,28 +47,24 @@ def load_hashes(dir: str, hashes: list) -> int:
         if file_name.endswith('.png'):
             
             image_path = os.path.join(dir, file_name)
-            image_hash = get_img_hash_by_path(image_path)
+            image_hash = get_image_hash(image_path)
             
             if image_hash not in hashes:
                 hashes.append(image_hash)
                 counter += 1
 
-    print(counter, "hashes are added.")
+    print(f"{counter} hashes are added.")
     return counter
 
-def collect_till_death(dir: str, limit: int = 100) -> None:
+def collect_captchas(dir: str, limit: int = 100) -> None:
     """
-        This is the useful method to get so many captchas from the source to process them
-        and find patterns on them later.<br>
-        This method will load existed captchas and then collects new captchas from the website
-        and doesn't store duplicates again.
-        
-        It continues to collect as long as it has stored `amount` number of new captchas.
+    Collect & store captchas from the source and avoid duplicates.<br>
+    Continues as long as it has stored `amount` number of new captchas.
     """
     
-    create_dir(dir)        
+    create_directory(dir)        
     hashes = []
-    amount = load_hashes(dir, hashes) # load existed captcha hashes, amount is number of captchas we already have
+    count = load_hashes(dir, hashes)
     counter = 0
             
     while (counter < limit):
@@ -83,40 +73,37 @@ def collect_till_death(dir: str, limit: int = 100) -> None:
     
         if response.status_code == 200:
 
-            img = Image.open(BytesIO(response.content))
-            img = img.convert("RGB")
-            img = img.crop(CAPTCHA_CROP_BOX)
-            hash = hashlib.md5(img.tobytes()).hexdigest()
+            img = Image.open(BytesIO(response.content)).convert("RGB").crop(CAPTCHA_CROP_BOX)
+            image_hash = hashlib.md5(img.tobytes()).hexdigest()
             
-            if hash in hashes:
-                print("Duplicate found.")
-            else:
-                print("New captcha found, amount:", amount)
+            if image_hash not in hashes:
+                print("New captcha found, amount:", count)
                 hashes.append(hash)
-                amount += 1
+                count += 1
                 counter += 1
-                filename = os.path.join(dir, f"{amount}.png")
+                filename = os.path.join(dir, f"{count}.png")
                 img.save(filename, format="PNG")
+            else:
+                print("Duplicate found.")
         else:
             print("Failed to get image.")
-
+            
     print("Finished.")
 
 def seprate_digits_in_dirs() -> None:
     """
-        Used since we need to seprate {ith} placed digits in seprated dirs to work with them
-        and find a way to detect them.<br>
-        Like: `/digits/1`, `/digits/2` ... and each dir contains digits in that place<br>
-        Also used hash to avoid adding duplicates.
+    Separate digits from captcha images into designated directories.<br>
+    Avoid duplicate digits<br>
+    e.g: `/digits/1` for first placed digits, `/digits/2` for second ...
     """
     
     hashes = [[],[],[],[]]
     counter = 1
 
-    create_dir("tmp/digits/1",False)
-    create_dir("tmp/digits/2",False)
-    create_dir("tmp/digits/3",False)
-    create_dir("tmp/digits/4",False)
+    create_directory("tmp/digits/1",False)
+    create_directory("tmp/digits/2",False)
+    create_directory("tmp/digits/3",False)
+    create_directory("tmp/digits/4",False)
 
     for i in range(1,1001):
         path = "../tmp/images/" + str(i) + ".png"
@@ -125,7 +112,7 @@ def seprate_digits_in_dirs() -> None:
         
         for j in range(4):
 
-            img_hash = get_img_hash_by_object(images[j])
+            img_hash = get_image_hash_from_object(images[j])
             if img_hash not in hashes[j]:
                 save_path = f"tmp/digits/{j+1}/{counter}.png"
                 images[j].save(save_path, format="PNG")

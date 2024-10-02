@@ -1,12 +1,11 @@
 """
-This script is used to process captchas to find a detection pattern.
+Process captchas to find detection patterns.
 """
 
 from PIL import Image
 from core.utility.variables import *
 
 
-# find white cols
 def find_white_cols(image_path: str) -> list[int]:
     
     img = Image.open(image_path)
@@ -74,8 +73,6 @@ def find_surrounded_white_cols(cols: list[int]) -> list[int]:
     
     return res
 
-
-# find white rows
 def find_white_rows(image_path: str) -> list[int]:
     
     img = Image.open(image_path)
@@ -148,68 +145,50 @@ def find_surrounded_white_rows(rows: list[int]) -> list[int]:
 
 def extract_digits_from_captcha(captcha_image: Image.Image) -> list[Image.Image]:
     """
-        This method gets the captcha image and extracts 4 image from it, each one is a digit.
-        The area of each digit is defined in DIGIT_COL_REGIONS.
+    Get the captcha image & extract 4 images, each one is a digit.<br>
+    The area of each digit is defined in DIGIT_COL_REGIONS.<br>
         
-        - Req -> image must be RBG
-        - Return -> A list of 4 images each for one digit.
+    - Req: image must be RBG
+    - Return: A list of 4 images each for one digit.
     """
-            
-    digit_images = []
-    for col_start, col_end in DIGIT_COL_REGIONS:
-        box = (col_start, CAPTCHA_ROWS_RANGE[0], col_end + 1, CAPTCHA_ROWS_RANGE[1])
-        digit_image = captcha_image.crop(box)
-        digit_images.append(digit_image)
     
-    return digit_images
+    return [captcha_image.crop((col_start, CAPTCHA_ROWS_RANGE[0], col_end + 1, CAPTCHA_ROWS_RANGE[1])) for col_start, col_end in DIGIT_COL_REGIONS]
 
 def split_digit_into_parts(digit_image: Image.Image) -> list[Image.Image]:
     """
-        This method gets the digit image and split it into part with size of (PARTS_ROWS, PARTS_COLS).
-        
-        - Req -> image must be RBG
-        - Return -> List of parts in a row major order with size of DENSITIES_SIZE
-    """
-   
-    parts = []
-    for row in range(DENSITIES_SIZE[0]):
-        for col in range(DENSITIES_SIZE[1]):
-            left = col * PARTS_COLS
-            upper = row * PARTS_ROWS
-            right = (col + 1) * PARTS_COLS
-            lower = (row + 1) * PARTS_ROWS
-            box = (left, upper, right, lower)
-            part = digit_image.crop(box)
-            parts.append(part)
-    
-    return parts
+    Split digit image into part with size of (PARTS_ROWS, PARTS_COLS) for further analysis.
 
+    - Req: image must be RBG
+    - Return: List of parts in a row major order with size of DENSITIES_SIZE
+    """
+
+    return [
+        digit_image.crop((
+            PARTS_COLS *col,
+            PARTS_ROWS * row, 
+            PARTS_COLS * (col + 1), 
+            PARTS_ROWS * (row + 1)
+        ))
+        for row in range(DENSITIES_SIZE[0]) 
+        for col in range(DENSITIES_SIZE[1])
+    ]
+   
 def calculate_pixel_in_image(image: Image.Image, color: tuple[int] = (255,255,255)) -> list[int]:
     """
-        This method gets an image object and then finds number of matching pixels with desired rgb code like (0,0,0) for black pixels.
+    Get an image object & find number of matching pixels with desired rgb code like (0,0,0) for black pixels.
     
-        - Req -> image must be RBG
-        - Return -> A list: [total pixels, density] 
+    - Req: image must be RBG
+    - Return: A list: [total pixels, density] 
     """
     
     width, height = image.size
     total_pixels = width * height
-    pixels = 0
-    
-    for row in range(height):
-        for col in range(width):
-            r, g, b = image.getpixel((col, row))
-            if (r, g, b) == color:
-                pixels += 1
-    
-    density = pixels / total_pixels
-    return [total_pixels, density]
+    pixels = sum(1 for row in range(height) for col in range(width) if image.getpixel((col, row)) == color)    
+    return [total_pixels, pixels / total_pixels]
 
 def print_densites_list(densities : list[float]) -> None:
-    """
-        Just print densities list in a human readable way
-    """
-    
+    """Print densities in a human-readable format."""
+
     for row in range(DENSITIES_SIZE[0]):
         for col in range(DENSITIES_SIZE[1]):
             print(f"{densities[(row * DENSITIES_SIZE[1]) + col]:.2f}", end=" | ")
@@ -217,23 +196,22 @@ def print_densites_list(densities : list[float]) -> None:
 
 def get_digit_densities_list(digit_image: Image.Image) -> list[float]:
     """
-        This methods gets digit image (not captcha image!) and returns list of its parts densities (row major order)
-        
-        - Req -> image must be RBG
-        - Return -> densities list
+    Return densities for parts of a digit image in row major order
+    
+    - Req -> image must be RBG
     """
-
+    
     parts = split_digit_into_parts(digit_image)
-    densities = [round(calculate_pixel_in_image(part)[1] * 100) for part in parts]
-    return densities
+    return [round(calculate_pixel_in_image(part)[1] * 100) for part in parts]
+
 
 """
-    These find_{ith}_digit method have a simple pattern to find {ith} placed digit in captcha using its densities list.
-    I know this is the worst way but I'm not interested in finding a better/optimal way 0-0
-    
-    Actually there is no need to calculate density at all, only knowing which parts have white pixel inside is
-    enough to detect most of the cases but for some, it may be necessary to know the density based on the pattern like
-    the 8 and 9 in first placed digit which is solved using its density, it also can be solved with using better areas to check but I'm tired.
+These find_{ith}_digit method have a simple pattern to find {ith} placed digit in captcha using its densities list.
+I know this is the worst way but I'm not interested in finding a better/optimal way 0-0
+
+Actually there is no need to calculate density at all, only knowing which parts have white pixel inside is
+enough to detect most of the cases but for some, it may be necessary to know the density based on the pattern like
+the 8 and 9 in first placed digit which is solved using its density, it also can be solved with using better areas to check but I'm tired.
 """
 def find_first_digit(image_densities : list[float]) -> int:    
     
