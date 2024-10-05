@@ -51,11 +51,9 @@ def process_food_rows(soup: BeautifulSoup, process_each_row: bool = False) -> di
         - ...
     """
 
-    rows = soup.find_all(class_="aspNetDisabled")
-    
-    breakfast = rows[:7]
-    dinner = rows[7:14]
-    lunch = rows[14:]
+    breakfast = soup.find(id="tabs-1").find("table").find_all("tr")[1:]
+    dinner = soup.find(id="tabs-2").find("table").find_all("tr")[1:]
+    lunch = soup.find(id="tabs-3").find("table").find_all("tr")[1:]
     
     if not process_each_row:
         return {"breakfast": breakfast, "dinner": dinner, "lunch": lunch}
@@ -71,6 +69,7 @@ def process_food_rows(soup: BeautifulSoup, process_each_row: bool = False) -> di
 def get_food_program(session: requests.Session, next_week = False):
     """Fetch and parse current and next week food program."""
     
+    # get current week
     response = session.get(SELF_URL)
     soup = BeautifulSoup(response.content.decode("utf-8"), 'html.parser')
     current_week_program = process_food_rows(soup, True)
@@ -78,7 +77,15 @@ def get_food_program(session: requests.Session, next_week = False):
     if not next_week:
         return current_week_program
     
-    # fetch next week program
-    next_week_program = []
+    # get next week        
+    form_data = {
+        "ctl00$ScriptManager": "ctl00$UpdatePanel1|ctl00$cphMain$imgbtnNextWeek",
+        "__VIEWSTATE": soup.find('input', {'name': '__VIEWSTATE'})['value'],
+        "__EVENTTARGET": "ctl00$cphMain$imgbtnNextWeek",
+    }
+    
+    response = session.post(SELF_URL, data=form_data)
+    soup = BeautifulSoup(response.content.decode("utf-8"), 'html.parser')
+    next_week_program = process_food_rows(soup, True)
     
     return [current_week_program, next_week_program]
