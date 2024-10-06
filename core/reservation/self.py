@@ -9,16 +9,55 @@ def process_food_row(tr: Tag) -> dict[str, str]:
     Result:
         - day
         - place
+            - detail: for each place item there is a list [name, value]
+            - all: all of places (actually is used for dormitory students)
+            - selected: the selected place
         - food
+            - detail: for each food item there is a list [name, value]
+            - all: all of the food options
+            - selected: selected food option
         - price
         - status
+            - options:
+                - قابل رزور
+                - رزرو شده
+                - رزرو شده، خورده نشده، غیرفعال
+                - خورده شده
+                - غیرفعال
     """
-    
+
     tds = tr.find_all("td", recursive=False)
     
     day = tds[1].get_text(strip=True)
-    place = tds[2].find("option", selected=True).get_text(strip=True)
-    food = tds[3].find("option", selected=True).get_text(strip=True)
+    
+    # places
+    place_options = tds[2].find_all("option")
+    place = {
+        "all": [],
+        "selected": None
+    }
+    for option in place_options:
+        name = option.get_text(strip=True)
+        value = option.get('value')
+        place["all"].append([name, value])
+        
+        if option.has_attr('selected'):
+            place["selected"] = [name, value]
+
+    # foods 
+    food_options = tds[3].find_all("option")
+    food = {
+        "all": [],
+        "selected": None
+    }
+    for option in food_options:
+        name = option.get_text(strip=True)
+        value = option.get('value')
+        food["all"].append([name, value])
+
+        if option.has_attr('selected'):
+            food["selected"] = [name, value]
+    
     price = tds[6].find("span").get_text(strip=True)
     
     try:
