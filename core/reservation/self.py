@@ -1,10 +1,24 @@
 import requests
+from enum import Enum
 from bs4 import BeautifulSoup, Tag
 from core.utility.variables import SELF_URL
 
 
+class SELF_PLACE(Enum):
+    SOLEYMAN_KHATER = 2
+    SHAHID_FAHMIDEH = 3
+    SHAHID_BAHONAR = 4
+    SHAHID_RAJAEI = 6
+    SHAHID_MOFATEH = 7
+    NIKAN_MANDEGAR = 8
+
+class MEAL_TIME(Enum):
+    BREAKFAST = "Breakfast"
+    LUNCH = "Lunch"
+    DINNER = "Dinner"
+
 def get_self_page_response(session: requests.Session, next_week: bool = False) -> requests.Response:
-    """Fetch & return the next week page source"""
+    """Fetch & return current or next week page source"""
     
     response = session.get(SELF_URL)
     
@@ -131,33 +145,31 @@ def process_food_rows(soup: BeautifulSoup, process_each_row: bool = True, get_cr
 
     return res
 
-def generate_reserve_form_data(meal_time: str, viewstate: str, reservation: list[list[int | bool]]) -> dict[str, str]:
+def generate_reserve_form_data(meal_time: MEAL_TIME, viewstate: str, self_place: SELF_PLACE, foods: list[bool | int]) -> dict[str, str]:
     """
-    - (0 to 4) -> (shanbe ta 4shanbe)
     - meal_time must be one of (Breakfast | Lunch | Dinner)
-    - expected format of reservation: [ [reserve:bool, place:int, food:int ], ... ]
+    - self place is actually one place for each student & no one's gonna get the food from different self places like idiots
     """
+    
+    meal_time = meal_time.value
     
     form_data = {
         "__VIEWSTATE" : viewstate,       
         "ctl00$ScriptManager": f"ctl00$UpdatePanel1|ctl00$cphMain$btnSave{meal_time}",
         f"ctl00$cphMain$btnSave{meal_time}": "ذخیره",
-        f"ctl00$cphMain$grdReservation{meal_time}$ctl02$drpSelf": None,
-        f"ctl00$cphMain$grdReservation{meal_time}$ctl02$drpFood": None,
-        f"ctl00$cphMain$grdReservation{meal_time}$ctl03$drpSelf": None,
-        f"ctl00$cphMain$grdReservation{meal_time}$ctl03$drpFood": None,
-        f"ctl00$cphMain$grdReservation{meal_time}$ctl04$drpSelf": None,
-        f"ctl00$cphMain$grdReservation{meal_time}$ctl04$drpFood": None,
-        f"ctl00$cphMain$grdReservation{meal_time}$ctl05$drpSelf": None,
-        f"ctl00$cphMain$grdReservation{meal_time}$ctl05$drpFood": None,
-        f"ctl00$cphMain$grdReservation{meal_time}$ctl06$drpSelf": None,
-        f"ctl00$cphMain$grdReservation{meal_time}$ctl06$drpFood": None,
     }
-
-    for i in range(5):
-        if reservation[i][0]:
+        
+    # add reservations
+    for i in range(6):
+        form_data[f"ctl00$cphMain$grdReservation{meal_time}$ctl0{i + 2}$drpFood"] = foods[i][1]
+        if foods[i][0]:
             form_data[f"ctl00$cphMain$grdReservation{meal_time}$ctl0{i + 2}$chkReserve"] = "on"
-    
+
+    # for lunch there is only one choice and no need to specify!
+    if meal_time != "Lunch":
+        for i in range(6):
+            form_data[f"ctl00$cphMain$grdReservation{meal_time}$ctl0{i + 2}$drpSelf"] = self_place.value
+
     return form_data
 
 def get_food_program(session: requests.Session, next_week = False) -> dict[str, dict[str, list[Tag]] | dict[str, dict[int, dict[str, str]]]]:
@@ -184,3 +196,21 @@ def get_food_program(session: requests.Session, next_week = False) -> dict[str, 
     
     return {"current": current_week_program, "next": next_week_program}
 
+def reserve(session: requests.Session, meal_time: MEAL_TIME, self_place: SELF_PLACE, foods: list[bool | int], next_week: bool = False):
+    """
+    Main reservation method. Get the meal_time (Breakfast)
+    """
+    
+    response = get_self_page_response(session,next_week)
+    soup = BeautifulSoup(response.content.decode("utf-8"), 'html.parser')
+    viewstate = soup.find('input', {'name': '__VIEWSTATE'})['value']
+    form_data = generate_reserve_form_data(meal_time, viewstate, self_place, foods)
+    response = session.post(SELF_URL, data=form_data)
+    print("reserved")
+
+
+# Testing
+session = requests.Session()
+session.cookies.set("ASP.NET_SessionId","mhigg1fbbfnqeuu5rur3cpea")
+print(reserve(session, MEAL_TIME.BREAKFAST, SELF_PLACE.SHAHID_RAJAEI, [[0,-1], [1,35916], [1,35919], [1,35922], [1,35925], [1,35928], [0,-1]],True))
+    
