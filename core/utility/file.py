@@ -1,4 +1,5 @@
 import os
+import json
 import shutil
 from PIL import Image
 
@@ -24,3 +25,18 @@ def get_image_by_path(image_path: str, make_rgb: bool = True) -> Image.Image:
     if make_rgb:
         img = img.convert("RGB")
     return img
+
+def save_json(text: str, filename: str ="output.json") -> None:
+    """
+    Get the raw text, which is generally taken from the HTTP Header Live extension in firefox (in my case).<br>
+    Convert into a json file so that the form data can be checked more easily.
+    """
+    
+    data = {}
+    for pair in text.split('&'):
+        if pair.strip():
+            key, value = pair.split("=", 1)
+            data[key.strip()] = value.strip()
+
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
