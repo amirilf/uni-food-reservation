@@ -1,14 +1,30 @@
 from telegram import Update
 from telegram.ext import CallbackContext
 from bot import commands as c
+from telegram._callbackquery import CallbackQuery
 #=======================================
 
-# TODO: in all queries check for the message.id, if not equal to the last start command message
-# TODO: then it's completely obvious that is an old message!
+async def query_time_checker(query: CallbackQuery, context: CallbackContext) -> bool:
+
+    chat_id = query.message.chat.id
+    message_id = query.message.message_id
+    
+    if message_id != c.last_start_message:
+        try:
+            await context.bot.delete_message(chat_id=chat_id, message_id=message_id)
+        except Exception as e:
+            print(f"Error deleting message: {e}")
+        
+        await query.answer("«این پیام منقضی شده»", show_alert=True)
+        return False
+    
+    return True
 
 async def main_handler(update: Update, context: CallbackContext) -> None:
     
     query = update.callback_query
+    if not await query_time_checker(query, context):
+        return
     await query.answer()
     
     match query.data:
@@ -34,13 +50,13 @@ async def main_handler(update: Update, context: CallbackContext) -> None:
         case _:
             raise Exception("Wrong query data: " + query.data)
 
-
 async def terms_handler(update: Update, context: CallbackContext) -> None:
     
     query = update.callback_query
+    if not await query_time_checker(query, context):
+        return
     await query.answer()
-    
-    
+        
     match query.data:
         case "terms":
             # fetch stage
