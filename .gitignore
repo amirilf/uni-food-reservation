@@ -1,5 +1,6 @@
 # Custom
 **/tmp
+env.py
 
 # Compiled
 __pycache__/
