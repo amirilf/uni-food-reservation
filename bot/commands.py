@@ -28,7 +28,7 @@ async def start_command(update: Update, context: CallbackContext) -> None:
     
     # 5. set text and markup keyboard based on the user stage
     reply_markup = k.get_main_keyboard(stage_number)
-    reply_text = t["start"]
+    reply_text = t[f"stage{stage_number}"]
 
     new_message = await update.message.reply_text(text=reply_text, reply_markup=reply_markup)
     
@@ -36,11 +36,20 @@ async def start_command(update: Update, context: CallbackContext) -> None:
     last_start_message = new_message.message_id
 
 async def start(update: Update, context: CallbackContext) -> None:
+    
+    # fetch stage from db
     global stage_number
-    await update.callback_query.edit_message_text(t["start"],reply_markup=k.get_main_keyboard(stage_number))
+    
+    await update.callback_query.edit_message_text(t[f"stage{stage_number}"],reply_markup=k.get_main_keyboard(stage_number))
 
-async def terms(update: Update, context: CallbackContext) -> None:    
-    await update.callback_query.edit_message_text(text=t["terms"], reply_markup=k.terms_keyboard)
+async def terms(update: Update, context: CallbackContext, accepted: bool) -> None:  
+    
+    if accepted:
+        reply_markup = k.get_back_keyboard("start")
+    else:
+        reply_markup = k.terms_keyboard
+      
+    await update.callback_query.edit_message_text(text=t["terms"], reply_markup=reply_markup)
     
 async def usage(update: Update, context: CallbackContext) -> None:
     await update.callback_query.edit_message_text(text=t["usage"], reply_markup=k.get_back_keyboard("start"))

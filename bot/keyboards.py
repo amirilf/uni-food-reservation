@@ -44,8 +44,9 @@ def get_back_keyboard(query: str, markup: bool = True) -> InlineKeyboardMarkup:
 terms_keyboard = InlineKeyboardMarkup([
     [   
         InlineKeyboardButton("✅ میپذیرم", callback_data="terms_accepted"),
-        InlineKeyboardButton("❌ نمیپذیرم", callback_data="terms_unaccepted")
+        InlineKeyboardButton("❌ نمیپذیرم", callback_data="start")
     ]
 ])
+
 
 

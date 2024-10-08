@@ -3,6 +3,9 @@ from telegram.ext import CallbackContext
 from bot import commands as c
 #=======================================
 
+# TODO: in all queries check for the message.id, if not equal to the last start command message
+# TODO: then it's completely obvious that is an old message!
+
 async def main_handler(update: Update, context: CallbackContext) -> None:
     
     query = update.callback_query
@@ -12,6 +15,7 @@ async def main_handler(update: Update, context: CallbackContext) -> None:
         case 'start':
             await c.start(update, context)
         case 'terms':
+            print("HERE IN MAIN")
             await c.terms(update, context)
         case 'usage':
             await c.usage(update, context)
@@ -27,5 +31,24 @@ async def main_handler(update: Update, context: CallbackContext) -> None:
             await c.profile(update, context)
         case 'subscription':
             await c.subscription(update, context)
+        case _:
+            raise Exception("Wrong query data: " + query.data)
 
-    raise Exception("Wrong query data: " + query.data)
+
+async def terms_handler(update: Update, context: CallbackContext) -> None:
+    
+    query = update.callback_query
+    await query.answer()
+    
+    
+    match query.data:
+        case "terms":
+            # fetch stage
+            stage = c.stage_number
+            await c.terms(update, context, stage >= 2)
+        case "terms_accepted":
+            if c.stage_number < 2:
+                c.stage_number = 2
+            await c.start(update, context)
+        case _:
+            raise Exception("Wrong query data: " + query.data)
