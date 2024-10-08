@@ -1,6 +1,12 @@
 # Custom
 **/tmp
+
+# only in deployment i use this file but in production those 
+# variables inside this file are gonna be saved as env variables
 env.py
+
+# need to be updated based on a new scenario, so no need to track now
+texts.py
 
 # Compiled
 __pycache__/
