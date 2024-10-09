@@ -3,33 +3,40 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 # START COMMAND KEYBOARDS
 stage1_keyboard = [
-        [InlineKeyboardButton("📑 قوانین استفاده", callback_data="terms")],
-        [InlineKeyboardButton("📌 نحوه استفاده", callback_data="usage")],
-        [InlineKeyboardButton("📝 پیشنهادات و نظرات", callback_data='message')]
+        [
+            InlineKeyboardButton("📌 نحوه استفاده", callback_data="usage"),
+            InlineKeyboardButton("📑 قوانین استفاده", callback_data="terms")
+        ],
+        [
+            InlineKeyboardButton("📝 ارسال نظرات و پیشنهادات", callback_data='message'),
+        ]
 ]
 
 stage2_keyboard = [
     [InlineKeyboardButton("🌐 ورود به سامانه", callback_data="login")]
 ] + stage1_keyboard
 
-stage4_keyboard = [
-    [InlineKeyboardButton("🍽 سلف", callback_data="self")],
-    [[InlineKeyboardButton("⚙️ تنظیمات", callback_data="setting")], [InlineKeyboardButton("🙎‍♂️ پروفایل", "profile")]]
+stage3_keyboard = [
+    [
+        InlineKeyboardButton("🍽 سلف", callback_data="self"),
+        InlineKeyboardButton("💎 اشتراک", callback_data="subscription")
+    ],
+    [ 
+        InlineKeyboardButton("⚙️ تنظیمات", callback_data="setting"),
+        InlineKeyboardButton("🙎‍♂️ پروفایل", callback_data="profile")
+    ]
 ] + stage1_keyboard
 
-stage3_keyboard = [
-    [InlineKeyboardButton("💎 اشتراک", callback_data="subscription")],
-] + stage4_keyboard
-
 def get_main_keyboard(stage: int) -> InlineKeyboardMarkup:
+    
+    # 0:first time | 1:new | 2:terms accepted | 3:logged in | 4:premium
+    print(f"STAGE: {stage}")
     if stage < 2:
         keyboard = stage1_keyboard
     elif stage < 3:
         keyboard = stage2_keyboard
-    elif stage < 4:
-        keyboard = stage3_keyboard
     elif stage < 5:
-        keyboard = stage4_keyboard
+        keyboard = stage3_keyboard
     else:
         raise Exception("Stage is not in range of 0 to 4")
     return InlineKeyboardMarkup(keyboard)
@@ -47,6 +54,4 @@ terms_keyboard = InlineKeyboardMarkup([
         InlineKeyboardButton("❌ نمیپذیرم", callback_data="start")
     ]
 ])
-
-
 

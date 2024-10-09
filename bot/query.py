@@ -30,12 +30,8 @@ async def main_handler(update: Update, context: CallbackContext) -> None:
     match query.data:
         case 'start':
             await c.start(update, context)
-        case 'terms':
-            await c.terms(update, context)
         case 'usage':
             await c.usage(update, context)
-        case 'login':
-            await c.login(update, context)
         case 'self':
             await c.self(update, context)
         case 'setting':
@@ -77,13 +73,36 @@ async def message_handler(update: Update, context: CallbackContext) -> None:
             # check for limitation (fetching from the redis or context.user_data)
             is_limited = False
             if is_limited:
-                await query.answer("«به محدودیت ارسال پیام رسیدی بعدا امتحان کن»", show_alert=True)
+                await query.answer("«به محدودیت ارسال پیام رسیدی، بعدا امتحان کن»", show_alert=True)
             else:
                 await query.answer()
                 await c.message(update, context)
         case "message_cancel":
             await query.answer()
             context.user_data['forward_next_message'] = False
+            await c.start(update, context)
+        case _:
+            raise Exception("Wrong query data: " + query.data)
+
+async def login_handler(update: Update, context: CallbackContext) -> None:
+    
+    query = update.callback_query
+    if not await query_time_checker(query, context):
+        return
+    
+    match query.data:
+        case 'login':
+            # check for limitation (fetching from the redis or context.user_data)
+            is_limited = False
+            if is_limited:
+                await query.answer("«به محدودیت ورود به سامانه رسیدی، بعدا امتحان کن»", show_alert=True)
+            else:
+                await query.answer()
+                await c.login(update, context)
+        case "login_cancel":
+            await query.answer()
+            # TODO: make these keys variables
+            context.user_data['login_next_message'] = False
             await c.start(update, context)
         case _:
             raise Exception("Wrong query data: " + query.data)
