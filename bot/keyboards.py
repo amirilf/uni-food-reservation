@@ -5,7 +5,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 stage1_keyboard = [
         [InlineKeyboardButton("📑 قوانین استفاده", callback_data="terms")],
         [InlineKeyboardButton("📌 نحوه استفاده", callback_data="usage")],
-        [InlineKeyboardButton("📝 پیشنهادات و نظرات", callback_data='msg')]
+        [InlineKeyboardButton("📝 پیشنهادات و نظرات", callback_data='message')]
 ]
 
 stage2_keyboard = [

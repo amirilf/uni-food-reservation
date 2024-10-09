@@ -2,8 +2,13 @@ from telegram import Update
 from telegram.ext import CallbackContext
 from bot import keyboards as k
 from bot.texts import texts as t
+from bot.utility import env
 #=======================================
 
+# TODO: handle stage stuff using redis or context.user_data dict
+# TODO: can handle the stage between methods using context but need to updated in db
+# TODO: if it's increased or decreased
+# TODO: also last message id can be stored in context not redis
 last_start_message = None
 stage_number = 0
 
@@ -54,8 +59,30 @@ async def terms(update: Update, context: CallbackContext, accepted: bool) -> Non
 async def usage(update: Update, context: CallbackContext) -> None:
     await update.callback_query.edit_message_text(text=t["usage"], reply_markup=k.get_back_keyboard("start"))
 
-async def msg(update: Update, context: CallbackContext) -> None:
-    await update.callback_query.edit_message_text(text=t["msg"], reply_markup=k.get_back_keyboard("start"))
+async def message(update: Update, context: CallbackContext) -> None:
+    await update.callback_query.edit_message_text(text=t["message"], reply_markup=k.get_back_keyboard("message_cancel"))
+    context.user_data['forward_next_message'] = True
+
+async def forward_message_to_admin(update: Update, context: CallbackContext) -> None:
+
+    if context.user_data.get('forward_next_message', False):
+        
+        admin_chat_id = env.ADMIN_ID
+
+        forwarded_message = await update.message.forward(chat_id=admin_chat_id)
+        
+        user = update.message.from_user
+        user_link = f"[{user.full_name}](tg://user?id={user.id})"
+        
+        await context.bot.send_message(
+            chat_id=admin_chat_id,
+            text=f"By {user_link} with id: {user.id}.",
+            reply_to_message_id=forwarded_message.message_id,
+            parse_mode='Markdown'
+        )
+
+        await update.message.reply_text("با موفقیت به ادمین ارسال شد.", reply_to_message_id=update.message.message_id)
+        context.user_data['forward_next_message'] = False
 
 async def login(update: Update, context: CallbackContext) -> None:
     pass

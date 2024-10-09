@@ -31,12 +31,9 @@ async def main_handler(update: Update, context: CallbackContext) -> None:
         case 'start':
             await c.start(update, context)
         case 'terms':
-            print("HERE IN MAIN")
             await c.terms(update, context)
         case 'usage':
             await c.usage(update, context)
-        case 'msg':
-            await c.msg(update, context)
         case 'login':
             await c.login(update, context)
         case 'self':
@@ -65,6 +62,28 @@ async def terms_handler(update: Update, context: CallbackContext) -> None:
         case "terms_accepted":
             if c.stage_number < 2:
                 c.stage_number = 2
+            await c.start(update, context)
+        case _:
+            raise Exception("Wrong query data: " + query.data)
+
+async def message_handler(update: Update, context: CallbackContext) -> None:
+    
+    query = update.callback_query
+    if not await query_time_checker(query, context):
+        return
+    
+    match query.data:
+        case 'message':
+            # check for limitation (fetching from the redis or context.user_data)
+            is_limited = False
+            if is_limited:
+                await query.answer("«به محدودیت ارسال پیام رسیدی بعدا امتحان کن»", show_alert=True)
+            else:
+                await query.answer()
+                await c.message(update, context)
+        case "message_cancel":
+            await query.answer()
+            context.user_data['forward_next_message'] = False
             await c.start(update, context)
         case _:
             raise Exception("Wrong query data: " + query.data)
