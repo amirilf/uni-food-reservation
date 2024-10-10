@@ -1,6 +1,6 @@
 from telegram.ext import CallbackContext
 from telegram.ext import Application
-from bot.utility import variables as v, env
+from utility import env, config
 #=======================================
 
 async def bot_is_alive(context: CallbackContext):
@@ -14,8 +14,8 @@ def schedule_jobs(application: Application):
         
     job_queue.run_daily(
         reserve,
-        time=v.RESERVE_TIME,
-        days=v.RESERVE_DAY,
+        time=config.RESERVE_TIME,
+        days=config.RESERVE_DAY,
         name="reserve"
     )
 

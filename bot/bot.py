@@ -1,18 +1,12 @@
-import os
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters
-from bot.utility import variables as v, env
 from bot.schedule import schedule_jobs
 from bot.commands import start_command, handle_next_message
 from bot.query import main_handler, terms_handler, message_handler, login_handler
-from dotenv import load_dotenv
 #=======================================
 
-# load .env variables
-if v.ENV == "DEVELOPMENT":
-    load_dotenv()
-
-def main():
-    application = Application.builder().token(env.BOT_TOKEN).build()
+def run(token: str) -> None:
+    
+    application = Application.builder().token(token).build()
     
     # schedule
     # schedule_jobs(application)
@@ -30,6 +24,3 @@ def main():
     application.add_handler(CallbackQueryHandler(main_handler))
     
     application.run_polling()
-
-if __name__ == '__main__':
-    main()

@@ -2,7 +2,7 @@ from telegram import Update
 from telegram.ext import CallbackContext
 from bot import keyboards as k
 from bot.texts import texts as t
-from bot.utility import env
+from utility import env
 #=======================================
 
 # TODO: handle stage stuff using redis or context.user_data dict
@@ -13,7 +13,8 @@ last_start_message = None
 stage_number = 0
 
 # Command methods
-async def start_command(update: Update, context: CallbackContext) -> None:
+async def start_command(update: Update, context: CallbackContext) -> None:        
+    
     # 1. check for limitation of usage start command in redis
 
     # 2. fetch these stuff from the db (postgres or redis)
