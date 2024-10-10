@@ -4,7 +4,7 @@ from bot import commands as c
 from telegram._callbackquery import CallbackQuery
 #=======================================
 
-async def query_time_checker(query: CallbackQuery, context: CallbackContext) -> bool:
+async def is_query_from_old_message(query: CallbackQuery, context: CallbackContext) -> bool:
 
     chat_id = query.message.chat.id
     message_id = query.message.message_id
@@ -16,14 +16,14 @@ async def query_time_checker(query: CallbackQuery, context: CallbackContext) -> 
             print(f"Error deleting message: {e}")
         
         await query.answer("«این پیام منقضی شده»", show_alert=True)
-        return False
+        return True
     
-    return True
+    return False
 
 async def main_handler(update: Update, context: CallbackContext) -> None:
     
     query = update.callback_query
-    if not await query_time_checker(query, context):
+    if await is_query_from_old_message(query, context):
         return
     await query.answer()
     
@@ -46,7 +46,7 @@ async def main_handler(update: Update, context: CallbackContext) -> None:
 async def terms_handler(update: Update, context: CallbackContext) -> None:
     
     query = update.callback_query
-    if not await query_time_checker(query, context):
+    if await is_query_from_old_message(query, context):
         return
     await query.answer()
         
@@ -65,7 +65,7 @@ async def terms_handler(update: Update, context: CallbackContext) -> None:
 async def message_handler(update: Update, context: CallbackContext) -> None:
     
     query = update.callback_query
-    if not await query_time_checker(query, context):
+    if await is_query_from_old_message(query, context):
         return
     
     match query.data:
@@ -87,7 +87,7 @@ async def message_handler(update: Update, context: CallbackContext) -> None:
 async def login_handler(update: Update, context: CallbackContext) -> None:
     
     query = update.callback_query
-    if not await query_time_checker(query, context):
+    if await is_query_from_old_message(query, context):
         return
     
     match query.data:
