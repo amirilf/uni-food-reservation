@@ -4,16 +4,15 @@ from bot.utility import variables as v, env
 from bot.schedule import schedule_jobs
 from bot.commands import start_command, handle_next_message
 from bot.query import main_handler, terms_handler, message_handler, login_handler
+from dotenv import load_dotenv
 #=======================================
 
-
-# set system proxy if needed
-if v.PROXY:
-    os.environ['http_proxy'] = 'http://192.168.175.26:8080'
-    os.environ['https_proxy'] = 'http://192.168.175.26:8080'
+# load .env variables
+if v.ENV == "DEVELOPMENT":
+    load_dotenv()
 
 def main():
-    application = Application.builder().token(env.API_TOKEN).build()
+    application = Application.builder().token(env.BOT_TOKEN).build()
     
     # schedule
     # schedule_jobs(application)

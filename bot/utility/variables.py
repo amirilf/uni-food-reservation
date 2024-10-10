@@ -1,6 +1,8 @@
 from datetime import time
 import pytz
 
+DEVELOPMENT = True
+
 PROXY = "http://192.168.175.26:8080"
 
 # TIMES IN SECONDS
