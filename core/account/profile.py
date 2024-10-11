@@ -8,17 +8,17 @@ from core.account.auth import get_page_or_exception
 def get_profile_information(session: requests.Session) -> dict[str, str] | Exception:
     """
     Extract user information including:
-        - UniNumber
-        - Name
-        - Gender
-        - Balance
-        - Phone
-        - Email
-        - Faculty
-        - Degree
-        - LastVisit
+        - national_number
+        - fullname
+        - gender
+        - balance
+        - phone
+        - email
+        - faculty
+        - degree
+        - last_login
     """        
-    
+
     response = get_page_or_exception(session, PROFILE_URL)
     soup = BeautifulSoup(response.content, 'html.parser')
     
@@ -27,14 +27,15 @@ def get_profile_information(session: requests.Session) -> dict[str, str] | Excep
         return element.get_text(strip=True) if element else ""
     
     user_info = {
-        "UniNumber": get_text_or_default("cphMain_lblIdNumber"),
-        "Name": get_text_or_default("cphMain_lblName"),
-        "Gender": get_text_or_default("cphMain_lblGender"),
-        "Phone": get_text_or_default("cphMain_lblMobile"),
-        "Email": get_text_or_default("cphMain_lblEmail"),
-        "Faculty": get_text_or_default("cphMain_lblCollege"),
-        "Degree": get_text_or_default("cphMain_lblGrade"),
-        "LastVisit": get_text_or_default("cphMain_lblLastLogin")
+        "national_number": get_text_or_default("cphMain_lblNationalCode"),
+        "fullname": get_text_or_default("cphMain_lblName"),
+        "gender": get_text_or_default("cphMain_lblGender"),
+        "phone": get_text_or_default("cphMain_lblMobile"),
+        "email": get_text_or_default("cphMain_lblEmail"),
+        "faculty": get_text_or_default("cphMain_lblCollege"),
+        "degree": get_text_or_default("cphMain_lblGrade"),
+        "last_login": get_text_or_default("cphMain_lblLastLogin"),
+        "balance": get_text_or_default("lblCredit")
     }
 
     return user_info

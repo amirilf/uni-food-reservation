@@ -1,12 +1,13 @@
 from telegram import Update
 from telegram.ext import CallbackContext
+import requests
 from bot import keyboards as k
-from bot.texts import texts as t
+from bot.texts import texts as t, get_profile_text
 from utility import env
 from database.connection import get_async_db_session
-from database.user_crud import create_user, get_user_by_t_id
-from database.user_model import User
+from database.user_crud import create_user, get_user_by_t_id, update_user
 from database.enums import UserStage
+from core.account import auth as core_auth, profile as core_profile
 #=======================================
 
 # Command methods
@@ -59,6 +60,7 @@ async def start_command(update: Update, context: CallbackContext) -> None:
     # save command message id
     context.user_data["last_command_message"] = new_message.message_id
 
+
 # Query methods
 async def start(update: Update, context: CallbackContext) -> None:
     user_stage = context.user_data["user_stage"]
@@ -91,10 +93,27 @@ async def setting(update: Update, context: CallbackContext) -> None:
     pass
 
 async def profile(update: Update, context: CallbackContext) -> None:
-    pass
+    
+    t_id = update.effective_user.id
+
+    try:
+        async with get_async_db_session() as db:
+            try:
+                user = await get_user_by_t_id(db, t_id)
+                if user:
+                    await update.callback_query.edit_message_text(text=get_profile_text(user.fullname, user.username, user.faculty), reply_markup=k.get_back_keyboard("start"))
+                else:
+                    print("User not found.")
+            except Exception as db_error:
+                print(f"Database error: {db_error}")
+    except Exception as e:
+        print(e)
+    
+    await update.callback_query.answer("عملیات ناموفق.", show_alert=True)    
 
 async def subscription(update: Update, context: CallbackContext) -> None:
     pass
+
 
 # Message methods 
 async def handle_next_message(update: Update, context: CallbackContext) -> None:
@@ -127,6 +146,7 @@ async def forward_message_to_admin(update: Update, context: CallbackContext) -> 
 
 async def login_user_in_cullinan(update: Update, context: CallbackContext) -> None:
 
+    # =====> message validation
     if update.message.text is None:
         await update.message.reply_text("باید یک متن شامل نام کاربری و رمزعبورت ارسال کنی!")
         return
@@ -146,25 +166,60 @@ async def login_user_in_cullinan(update: Update, context: CallbackContext) -> No
 
     await update.message.reply_text("درحال تلاش برای ورود به سامانه...")  
     
-    login_error = await login_process(context, username, password)
+    
+    # =====> trying to login
+    t_id = update.effective_user.id
+    login_error = await login_process(context, t_id, username, password)
     context.user_data["login_next_message"] = False
-    
-    await update.message.reply_text(login_error if login_error else "ورود با موفقیت انجام شد.")
-    await start_command(update, context)
 
-async def login_process(context: CallbackContext, username: str, password: str) -> str | None:
-    """
-    responsible to login the user and see if username & password are correct
-    save session in the redis for later usage
-    increase user stage in both context and db
-    if it was successful remove lase command message, send new command message (since stage is new)
-    also add limitation to the redis if not successful, if it was doesnt matter what is already saved in redis
-    """
+
+    await update.message.reply_text(login_error if login_error else "ورود با موفقیت انجام شد.")        
+    await start_command(update, context)
+      
+    # =====> fetch & save profile  
+    session = context.user_data.get("user_session")
     
-    if True:
-        context.user_data["stage"] += 1
-        return None
-    else:
-        # add limit
-        error = "نام کاربری یا رمزعبوت غلط بود"
-        return error
+    for i in range(5):
+        try:
+            await save_profile_info(session, t_id)
+            return
+        except Exception as e:
+            print("Exception in saving informations of the user,", t_id)
+        
+async def save_profile_info(session: requests.Session, t_id: int) -> None:
+    try:
+        result = core_profile.get_profile_information(session)
+        async with get_async_db_session() as db:
+            user = await update_user(db, t_id, 
+                                    user_stage=UserStage.LOGIN,
+                                    fullname=result.get("fullname"),
+                                    gender=result.get("gender"),
+                                    national_number=result.get("national_number"),
+                                    phone=result.get("phone"),
+                                    email=result.get("email"),
+                                    faculty=result.get("faculty"))
+            if not user:
+                print("User not updated in <save_profile_info>")
+    except:
+        print("User not updated in <save_profile_info>")
+    
+async def login_process(context: CallbackContext, t_id: int, username: str, password: str) -> str | None:
+    # TODO: check limitation of login process
+    
+    try:
+        session = core_auth.login(username, password)
+        async with get_async_db_session() as db:
+            try:
+                user = await update_user(db, t_id, user_stage=UserStage.LOGIN, username=username, password=password)
+                if user:
+                    context.user_data["user_stage"] = UserStage.LOGIN
+                    context.user_data["user_session"] = session
+                    return None
+                else:
+                    print("User not found.")
+                    return "Failed."
+            except Exception as db_error:
+                print(f"Database error: {db_error}")
+                return "Failed."
+    except Exception as e:
+        return str(e)
