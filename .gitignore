@@ -1,6 +1,7 @@
 # Custom
 **/tmp
 texts.py
+db.sqlite
 
 # Compiled
 __pycache__/
