@@ -3,52 +3,66 @@ from telegram.ext import CallbackContext
 from bot import keyboards as k
 from bot.texts import texts as t
 from utility import env
+from database.connection import get_async_db_session
+from database.user_crud import create_user, get_user_by_t_id
+from database.user_model import User
+from database.enums import UserStage
 #=======================================
 
-# TODO: handle stage stuff using redis or context.user_data dict
-# TODO: can handle the stage between methods using context but need to updated in db
-# TODO: if it's increased or decreased
-# TODO: also last message id can be stored in context not redis
-last_start_message = None
-stage_number = 0
-
 # Command methods
-async def start_command(update: Update, context: CallbackContext) -> None:        
+async def start_command(update: Update, context: CallbackContext) -> None:  
     
-    # 1. check for limitation of usage start command in redis
-
-    # 2. fetch these stuff from the db (postgres or redis)
-    global last_start_message
-    global stage_number
-    
-
-    # 3. remove last command message before sending new one.
-    if last_start_message:
+    # check if there is a last command message to delete
+    last_command_message = context.user_data.get("last_command_message")
+    if last_command_message:
         try:
-            await context.bot.delete_message(chat_id=update.effective_chat.id, message_id=last_start_message)
+            await context.bot.delete_message(chat_id=update.effective_chat.id, message_id=last_command_message)
         except Exception as e:
             print(f"Error deleting last message: {e}")
+
+    user_stage = context.user_data.get("user_stage")
     
-    # 4. create user in db if it's the first time
-    if stage_number == 0:
-        stage_number = 1
+    # check if it's a new user
+    if not user_stage:
+        # seems like it's a new user
+        # get user data
+        user = update.effective_user 
+        t_id = user.id   
+        t_fullname = user.full_name
+        
+        async with get_async_db_session() as db:
+            try:
+                existing_user = await get_user_by_t_id(db, t_id)
+                if existing_user:
+                    user_stage = existing_user.user_stage
+                    context.user_data["user_stage"] = user_stage
+                else:
+                    new_user = await create_user(db, t_id=t_id, t_fullname=t_fullname)
+                    if new_user:
+                        user_stage = UserStage.NEW
+                        context.user_data["user_stage"] = user_stage
+                    else:
+                        print("Failed creating a new user.")
+                        await update.message.reply_text("Failed.")
+                        return
+            except Exception as db_error:
+                print(f"Database error: {db_error}")
+                await update.message.reply_text("Failed.")
+                return
     
-    # 5. set text and markup keyboard based on the user stage
-    reply_markup = k.get_main_keyboard(stage_number)
-    reply_text = t[f"stage{stage_number}"]
+    # set markup & text
+    reply_markup = k.get_main_keyboard(user_stage.value)
+    reply_text = t[f"stage{user_stage.value}"]
 
     new_message = await update.message.reply_text(text=reply_text, reply_markup=reply_markup)
-    
-    # 6. save command message id
-    last_start_message = new_message.message_id
+
+    # save command message id
+    context.user_data["last_command_message"] = new_message.message_id
 
 # Query methods
 async def start(update: Update, context: CallbackContext) -> None:
-    
-    # fetch stage from db
-    global stage_number
-    
-    await update.callback_query.edit_message_text(t[f"stage{stage_number}"],reply_markup=k.get_main_keyboard(stage_number))
+    user_stage = context.user_data["user_stage"]
+    await update.callback_query.edit_message_text(t[f"stage{user_stage.value}"],reply_markup=k.get_main_keyboard(user_stage.value))
 
 async def terms(update: Update, context: CallbackContext, accepted: bool) -> None:  
     
@@ -148,8 +162,7 @@ async def login_process(context: CallbackContext, username: str, password: str) 
     """
     
     if True:
-        global stage_number
-        stage_number = 3
+        context.user_data["stage"] += 1
         return None
     else:
         # add limit

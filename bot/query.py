@@ -2,6 +2,9 @@ from telegram import Update
 from telegram.ext import CallbackContext
 from bot import commands as c
 from telegram._callbackquery import CallbackQuery
+from database.enums import UserStage
+from database.connection import get_async_db_session
+from database.user_crud import update_user, get_user_by_t_id
 #=======================================
 
 async def is_query_from_old_message(query: CallbackQuery, context: CallbackContext) -> bool:
@@ -9,7 +12,7 @@ async def is_query_from_old_message(query: CallbackQuery, context: CallbackConte
     chat_id = query.message.chat.id
     message_id = query.message.message_id
     
-    if message_id != c.last_start_message:
+    if message_id != context.user_data["last_command_message"]:
         try:
             await context.bot.delete_message(chat_id=chat_id, message_id=message_id)
         except Exception as e:
@@ -49,15 +52,28 @@ async def terms_handler(update: Update, context: CallbackContext) -> None:
     if await is_query_from_old_message(query, context):
         return
     await query.answer()
-        
+    
+    user_stage = context.user_data.get("user_stage")
+    
     match query.data:
         case "terms":
-            # fetch stage
-            stage = c.stage_number
-            await c.terms(update, context, stage >= 2)
+            await c.terms(update, context, user_stage != UserStage.NEW)
         case "terms_accepted":
-            if c.stage_number < 2:
-                c.stage_number = 2
+            if user_stage == UserStage.NEW:
+                async with get_async_db_session() as db:
+                    try:
+                        user = await update_user(db, update.effective_user.id, user_stage=UserStage.TERMS)
+                        if user:
+                            context.user_data["user_stage"] = UserStage.TERMS
+                        else:
+                            print("User not found.")
+                            return
+                    except Exception as db_error:
+                        print(f"Database error: {db_error}")
+                        return
+            else:
+                print("wtf is going on? in <terms_accepted> query.")
+                return
             await c.start(update, context)
         case _:
             raise Exception("Wrong query data: " + query.data)

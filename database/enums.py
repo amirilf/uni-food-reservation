@@ -1,6 +1,6 @@
 import enum
 
-class UserStageEnum(enum.Enum):
+class UserStage(enum.Enum):
     NEW = 1
     TERMS = 2
     LOGIN = 3

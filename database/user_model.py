@@ -1,12 +1,12 @@
-from sqlalchemy import Column, Integer, String, Enum
+from sqlalchemy import Column, Integer, BigInteger, String, Enum
 from database.connection import Base
-from database.enums import UserStageEnum
+from database.enums import UserStage
 
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, index=True)
     
-    t_id = Column(String, unique=True, nullable=False)
+    t_id = Column(BigInteger, unique=True, nullable=False)
     t_fullname = Column(String(100), nullable=False)
     
     username = Column(String(50), nullable=True)
@@ -18,4 +18,4 @@ class User(Base):
     email = Column(String(100), nullable=True)
     faculty = Column(String(50), nullable=True)
     
-    user_stage = Column(Enum(UserStageEnum), nullable=False, default=UserStageEnum.NEW)
+    user_stage = Column(Enum(UserStage), nullable=False, default=UserStage.NEW)

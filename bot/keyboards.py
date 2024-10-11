@@ -1,8 +1,9 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from database.enums import UserStage
 #=======================================
 
 # START COMMAND KEYBOARDS
-stage1_keyboard = [
+s1_keyboard = [
         [
             InlineKeyboardButton("📌 نحوه استفاده", callback_data="usage"),
             InlineKeyboardButton("📑 قوانین استفاده", callback_data="terms")
@@ -12,11 +13,11 @@ stage1_keyboard = [
         ]
 ]
 
-stage2_keyboard = [
+s2_keyboard = [
     [InlineKeyboardButton("🌐 ورود به سامانه", callback_data="login")]
-] + stage1_keyboard
+] + s1_keyboard
 
-stage3_keyboard = [
+s3_keyboard = [
     [
         InlineKeyboardButton("🍽 سلف", callback_data="self"),
         InlineKeyboardButton("💎 اشتراک", callback_data="subscription")
@@ -25,18 +26,18 @@ stage3_keyboard = [
         InlineKeyboardButton("⚙️ تنظیمات", callback_data="setting"),
         InlineKeyboardButton("🙎‍♂️ پروفایل", callback_data="profile")
     ]
-] + stage1_keyboard
+] + s1_keyboard
 
 def get_main_keyboard(stage: int) -> InlineKeyboardMarkup:
     
     # 0:first time | 1:new | 2:terms accepted | 3:logged in | 4:premium
     print(f"STAGE: {stage}")
-    if stage < 2:
-        keyboard = stage1_keyboard
-    elif stage < 3:
-        keyboard = stage2_keyboard
-    elif stage < 5:
-        keyboard = stage3_keyboard
+    if stage == UserStage.NEW.value:
+        keyboard = s1_keyboard
+    elif stage == UserStage.TERMS.value:
+        keyboard = s2_keyboard
+    elif stage <= UserStage.PAID.value:
+        keyboard = s3_keyboard
     else:
         raise Exception("Stage is not in range of 0 to 4")
     return InlineKeyboardMarkup(keyboard)
