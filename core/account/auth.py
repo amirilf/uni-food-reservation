@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from core.captcha.solve import solve_in_byte
-from core.utility.variables import LOGIN_URL, CAPTCHA_URL, AUTH_SESSION_HEADER, PROFILE_URL
+from utility.config import LOGIN_URL, CAPTCHA_URL, AUTH_SESSION_HEADER, PROFILE_URL
 
 def get_page_or_exception(session: requests.Session, url: str) -> requests.Response:
     """

@@ -1,7 +1,7 @@
 import requests
 from enum import Enum
 from bs4 import BeautifulSoup, Tag
-from core.utility.variables import SELF_URL
+from utility.config import SELF_URL
 
 
 class SELF_PLACE(Enum):

@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from core.account.auth import get_page_or_exception
-from core.utility.variables import TRANSACTIONS_URL
+from utility.config import TRANSACTIONS_URL
 
 
 def get_transactions(session: requests.Session) -> list | Exception:

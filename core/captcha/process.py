@@ -3,7 +3,7 @@ Process captchas to find detection patterns.
 """
 
 from PIL import Image
-from core.utility.variables import *
+from utility.config import *
 
 
 def find_white_cols(image_path: str) -> list[int]:

@@ -7,9 +7,9 @@ import requests
 import hashlib
 from io import BytesIO
 from PIL import Image
-from core.utility.variables import CAPTCHA_URL, CAPTCHA_CROP_BOX
-from core.utility.file import create_directory, get_image_by_path
-from core.utility.hash import get_image_hash, get_image_hash_from_object
+from utility.config import CAPTCHA_URL, CAPTCHA_CROP_BOX
+from utility.file import create_directory, get_image_by_path
+from utility.hash import get_image_hash, get_image_hash_from_object
 from core.captcha.process import extract_digits_from_captcha
 
 
