@@ -1,35 +1,15 @@
 from telegram import Update
 from telegram.ext import CallbackContext
-from telegram._callbackquery import CallbackQuery
 from database.enums import UserStage
 from database.connection import get_async_db_session
 from database.user_crud import update_user
 from bot.utility import keyboards as k, variables as v
 from bot.utility.texts import texts as t
 
-
 #==> Query handlers
-async def is_query_from_old_message(query: CallbackQuery, context: CallbackContext) -> bool:
-
-    chat_id = query.message.chat.id
-    message_id = query.message.message_id
-    
-    if message_id != context.user_data.get(v.CONTEXT_LAST_COMMAND_MESSAGE_NUMBER):
-        try:
-            await context.bot.delete_message(chat_id=chat_id, message_id=message_id)
-        except Exception as e:
-            print(f"Error deleting message: {e}")
-        
-        await query.answer("«این پیام منقضی شده»", show_alert=True)
-        return True
-    
-    return False
-
 async def main_handler(update: Update, context: CallbackContext) -> None:
     
     query = update.callback_query
-    if await is_query_from_old_message(query, context):
-        return
     await query.answer()
     
     match query.data:
@@ -51,8 +31,6 @@ async def main_handler(update: Update, context: CallbackContext) -> None:
 async def terms_handler(update: Update, context: CallbackContext) -> None:
     
     query = update.callback_query
-    if await is_query_from_old_message(query, context):
-        return
     await query.answer()
     
     user_stage = context.user_data.get(v.CONTEXT_USER_STAGE)
@@ -83,8 +61,6 @@ async def terms_handler(update: Update, context: CallbackContext) -> None:
 async def message_handler(update: Update, context: CallbackContext) -> None:
     
     query = update.callback_query
-    if await is_query_from_old_message(query, context):
-        return
     
     match query.data:
         case 'message':
@@ -105,8 +81,6 @@ async def message_handler(update: Update, context: CallbackContext) -> None:
 async def login_handler(update: Update, context: CallbackContext) -> None:
     
     query = update.callback_query
-    if await is_query_from_old_message(query, context):
-        return
     
     match query.data:
         case 'login':

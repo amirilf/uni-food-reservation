@@ -9,7 +9,7 @@ from bot.utility.texts import texts as t
 
 #==> Commands
 async def start(update: Update, context: CallbackContext) -> None:  
-    
+        
     # check if there is a last command message to delete
     last_command_message = context.user_data.get(v.CONTEXT_LAST_COMMAND_MESSAGE_NUMBER)
     if last_command_message:
