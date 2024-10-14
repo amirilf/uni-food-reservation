@@ -4,7 +4,7 @@ from database.enums import UserStage
 from database.connection import get_async_db_session
 from database.user_crud import update_user
 from bot.utility import keyboards as k, variables as v
-from bot.utility.texts import texts as t
+from bot.utility.texts import texts as t, get_profile_text
 
 #==> Query handlers
 async def main_handler(update: Update, context: CallbackContext) -> None:
@@ -128,22 +128,16 @@ async def login(update: Update, context: CallbackContext) -> None:
 async def profile(update: Update, context: CallbackContext) -> None:
     
     try:
-        user_stage = context.user_data[v.CONTEXT_USER_STAGE]
         fullname = context.user_data[v.CONTEXT_USER_FULLNAME]
         username = context.user_data[v.CONTEXT_USER_USERNAME]
-        status = "غیرفعال" if user_stage == UserStage.LOGIN else "فعال"
-        
-        await update.callback_query.edit_message_text(
-            text = f"▪️نام: {fullname}\n▪️شماره دانشجویی: {username}\n▪️اشتراک: {status}\n‎",
-            reply_markup=k.get_back_keyboard("start"))
+        await update.callback_query.edit_message_text(get_profile_text(fullname, username),reply_markup=k.get_back_keyboard("start"))
         
     except:
         print("ERROR FETCHING PROFILE INFO.")
-        
         await update.callback_query.answer("عملیات ناموفق.", show_alert=True)    
 
 async def self(update: Update, context: CallbackContext) -> None:
-    pass
+    await update.callback_query.edit_message_text(text=t["self"], reply_markup=k.self_keyboard)
 
 async def setting(update: Update, context: CallbackContext) -> None:
     pass
