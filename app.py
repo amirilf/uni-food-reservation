@@ -1,9 +1,12 @@
-from utility import config, env
+from utility import config, env, file
 from dotenv import load_dotenv
-from bot.bot import run
+from bot import bot
 from database.init_db import init_db
 
 def main():
+
+    # remove pycashe files
+    file.remove_pycaches()
 
     # loading .env variables
     if config.DEVELOPMENT: 
@@ -13,7 +16,7 @@ def main():
     init_db()
 
     # running bot
-    run(env.BOT_TOKEN)
+    bot.run(env.BOT_TOKEN)
 
 if __name__ == '__main__':
     main()

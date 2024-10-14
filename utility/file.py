@@ -3,6 +3,13 @@ import json
 import shutil
 from PIL import Image
 
+def remove_pycaches():
+    current_directory = os.getcwd()
+    for root, dirs, files in os.walk(current_directory):
+        if '__pycache__' in dirs:
+            pycache_path = os.path.join(root, '__pycache__')
+            shutil.rmtree(pycache_path)
+
 def create_directory(dir: str, only_check: bool = True) -> None:
     """
     Create a directory at the specified path. If it already exists and `only_check` is False,
