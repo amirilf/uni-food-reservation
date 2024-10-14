@@ -33,7 +33,7 @@ async def update_user(db: AsyncSession, t_id: str, **kwargs) -> User | None:
 
     allowed_fields = {
         'username', 'password', 'fullname', 'gender', 
-        'national_number', 'phone', 'email', 'faculty', 'user_stage'
+        'national_number', 'phone', 'email', 'faculty', 'user_stage', "cookie"
     }
 
     for key, value in kwargs.items():

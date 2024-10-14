@@ -1,0 +1,10 @@
+CONTEXT_LAST_COMMAND_MESSAGE_NUMBER = "last_command_message"
+CONTEXT_NEXT_MESSAGE_FORWARD = "next_message_forward"
+CONTEXT_NEXT_MESSAGE_LOGIN = "next_message_login"
+
+CONTEXT_USER_SESSION = "user_session"
+CONTEXT_USER_STAGE = "user_stage"
+CONTEXT_USER_T_ID = "user_t_id"
+CONTEXT_USER_USERNAME = "user_username"
+CONTEXT_USER_PASSWORD = "user_password"
+CONTEXT_USER_FULLNAME = "user_fullname"

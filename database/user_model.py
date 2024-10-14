@@ -17,5 +17,6 @@ class User(Base):
     phone = Column(String(15), nullable=True)
     email = Column(String(100), nullable=True)
     faculty = Column(String(50), nullable=True)
+    cookie = Column(String(300), nullable=True)
     
     user_stage = Column(Enum(UserStage), nullable=False, default=UserStage.NEW)

@@ -1,9 +1,11 @@
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters
-from bot.schedule import schedule_jobs
-from bot.commands import start_command, handle_next_message
-from bot.query import main_handler, terms_handler, message_handler, login_handler
-#=======================================
+from bot.schedule.schedule import schedule_jobs
+from bot.handler.command import start
+from bot.handler.message import handle_next_message
+from bot.handler.query import main_handler, terms_handler, message_handler, login_handler
 
+
+#==> Main bot method
 def run(token: str) -> None:
     
     application = Application.builder().token(token).build()
@@ -12,7 +14,7 @@ def run(token: str) -> None:
     # schedule_jobs(application)
     
     # commands
-    application.add_handler(CommandHandler("start",start_command))  
+    application.add_handler(CommandHandler("start",start))  
     
     # everything except commands  
     application.add_handler(MessageHandler(filters.ALL & ~filters.COMMAND, handle_next_message))

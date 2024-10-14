@@ -62,3 +62,15 @@ def logout(session: requests.Session) -> bool:
     }
 
     return session.post(PROFILE_URL, data=form_data).url == LOGIN_URL
+
+def session_checker(session: requests.Session | None) -> bool:
+    
+    if not session:
+        return False
+    
+    try:
+        get_page_or_exception(session, PROFILE_URL)
+        return True
+    except:
+        return False
+    
