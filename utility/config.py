@@ -61,3 +61,5 @@ AUTH_SESSION_HEADER = {
     'DNT': '1',
     'Upgrade-Insecure-Requests': '1',
 }
+
+CULLINAN_COOKIE_NAME = "ASP.NET_SessionId"

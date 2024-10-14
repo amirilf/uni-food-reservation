@@ -1,6 +1,9 @@
-CONTEXT_LAST_COMMAND_MESSAGE_NUMBER = "last_command_message"
+CONTEXT_LAST_COMMAND_MESSAGE_ID = "last_command_message_id"
 CONTEXT_NEXT_MESSAGE_FORWARD = "next_message_forward"
 CONTEXT_NEXT_MESSAGE_LOGIN = "next_message_login"
+
+# a flag to check if the other infos are available in context (like session, username & stuff)
+CONTEXT_USER_DATA_AVAILABLE = "user_data_available" 
 
 CONTEXT_USER_SESSION = "user_session"
 CONTEXT_USER_STAGE = "user_stage"

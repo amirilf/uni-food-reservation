@@ -5,7 +5,7 @@ from database.connection import get_async_db_session
 from database.user_crud import get_user_by_t_id, update_user
 from database.enums import UserStage
 from core.account import auth as core_auth, profile as core_profile
-
+from utility.config import CULLINAN_COOKIE_NAME
 
 #========> Auth service methods
 async def save_profile_info(context: CallbackContext, t_id: int) -> None:
@@ -17,7 +17,7 @@ async def save_profile_info(context: CallbackContext, t_id: int) -> None:
     try:
 
         session = context.user_data.get(v.CONTEXT_USER_SESSION)
-        cookie = session.cookies.get("ASP.NET_SessionId")
+        cookie = session.cookies.get(CULLINAN_COOKIE_NAME)
 
         result = core_profile.get_profile_information(session)
 
@@ -73,7 +73,7 @@ async def get_authenticated_session(context: CallbackContext) -> requests.Sessio
         user = await get_user_by_t_id(db, context.user_data.get(v.CONTEXT_USER_T_ID))
         if user:
             session = requests.Session()
-            session.cookies.set("ASP.NET_SessionId", user.cookie)
+            session.cookies.set(CULLINAN_COOKIE_NAME, user.cookie)
             context.user_data[v.CONTEXT_USER_SESSION] = session
             return session
         else:

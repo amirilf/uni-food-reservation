@@ -1,7 +1,7 @@
 import requests
 from enum import Enum
 from bs4 import BeautifulSoup, Tag
-from utility.config import SELF_URL
+from utility.config import SELF_URL, CULLINAN_COOKIE_NAME
 
 
 class SELF_PLACE(Enum):
@@ -211,6 +211,6 @@ def reserve(session: requests.Session, meal_time: MEAL_TIME, self_place: SELF_PL
 
 # Testing
 session = requests.Session()
-session.cookies.set("ASP.NET_SessionId","mhigg1fbbfnqeuu5rur3cpea")
+session.cookies.set(CULLINAN_COOKIE_NAME, "mhigg1fbbfnqeuu5rur3cpea")
 print(reserve(session, MEAL_TIME.BREAKFAST, SELF_PLACE.SHAHID_RAJAEI, [[0,-1], [1,35916], [1,35919], [1,35922], [1,35925], [1,35928], [0,-1]],True))
     
