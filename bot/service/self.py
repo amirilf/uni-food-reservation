@@ -2,8 +2,11 @@ from telegram.ext import CallbackContext
 from bot.utility import variables as v
 from utility.time import get_tehran_time
 from datetime import timedelta
+from bot.service.auth import get_authenticated_session
+from core.reservation.self import get_food_program
+from requests import Session
 
-def update_self_program(context: CallbackContext) -> str | None:
+async def update_self_program(context: CallbackContext) -> str | None:
     """
     Try to update the Self week program considering limit and erros.<br>
     If updating was successful store WeekProgram and time in context data & return None, else return the error string<br>
@@ -21,7 +24,20 @@ def update_self_program(context: CallbackContext) -> str | None:
         # update program
         pass
     
-    # fetching for the first time
-    pass
+    session = await get_authenticated_session(context)
+    
+    print(session)
+    # error while getting session
+    if type(session) == str:
+        return session
+    
+    
+    program = get_food_program(session)
+    
+    context.user_data[v.CONTEXT_USER_SELF_PROGRAM_UPDATE_TIME] = now
+    
+    print(program)
+    return None
+    
     
     

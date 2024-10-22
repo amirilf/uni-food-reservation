@@ -63,7 +63,7 @@ async def login_process(context: CallbackContext, t_id: int, username: str, pass
     except Exception as e:
         return str(e)
 
-async def get_authenticated_session(context: CallbackContext) -> requests.Session:
+async def get_session(context: CallbackContext) -> requests.Session | None:
 
     session = context.user_data.get(v.CONTEXT_USER_SESSION)
 
@@ -80,4 +80,35 @@ async def get_authenticated_session(context: CallbackContext) -> requests.Sessio
         else:
             print("User not found.")
             return None
+    
+async def get_authenticated_session(context: CallbackContext) -> requests.Session | str:
+    
+    session = await get_session(context)
+    
+    if session:
+        if core_auth.session_checker(session):
+            print("Session was ok.")
+            return session
+    
+    print("Trying to get new session")
+    try:
+        # login & get new session
+        print(context.user_data[v.CONTEXT_USER_USERNAME])
+        print(context.user_data[v.CONTEXT_USER_PASSWORD])
+        
+        session = core_auth.login(context.user_data[v.CONTEXT_USER_USERNAME], context.user_data[v.CONTEXT_USER_PASSWORD])
+        
+        # save in db
+        cookie = session.cookies.get(CULLINAN_COOKIE_NAME)
+        async with get_async_db_session() as db:
+            user = await update_user(db, context.user_data[v.CONTEXT_USER_T_ID], cookie = cookie)
+            if not user:
+                print("User not updated in <get_authenticated_session>")
+            else:
+                context.user_data[v.CONTEXT_USER_SESSION] = session
+    
+        return session
+    
+    except Exception as e:
+        return str(e)
     

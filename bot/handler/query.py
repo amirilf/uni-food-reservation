@@ -5,7 +5,7 @@ from database.config.connection import get_async_db_session
 from database.repository.user_repository import update_user
 from bot.utility import keyboards as k, variables as v
 from bot.utility.texts import texts as t, get_profile_text
-
+from bot.service.self import update_self_program
 
 #==> Query handlers
 async def main_handler(update: Update, context: CallbackContext) -> None:
@@ -92,7 +92,6 @@ async def login_handler(update: Update, context: CallbackContext) -> None:
                 await login(update, context)
         case "login_cancel":
             await query.answer()
-            # TODO: make these keys variables
             context.user_data[v.CONTEXT_NEXT_MESSAGE_LOGIN] = False
             await start(update, context)
         case _:
@@ -111,7 +110,7 @@ async def self_handler(update: Update, context: CallbackContext) -> None:
         case "self_automatic":
             print("auto")
         case "self_program":
-            print("program")
+            await self_program(update, context)
         case "self_priority":
             print("priority")
         case _:
@@ -156,6 +155,10 @@ async def profile(update: Update, context: CallbackContext) -> None:
 
 async def self(update: Update, context: CallbackContext) -> None:
     await update.callback_query.edit_message_text(text=t["self"], reply_markup=k.self_keyboard)
+
+async def self_program(update: Update, context: CallbackContext) -> None:
+    result = await update_self_program(context)
+    await update.callback_query.edit_message_text(text=result if result else "Successfully done", reply_markup=k.get_back_keyboard("self"))
 
 async def setting(update: Update, context: CallbackContext) -> None:
     pass
