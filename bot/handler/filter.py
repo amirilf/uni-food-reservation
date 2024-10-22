@@ -1,9 +1,9 @@
 from telegram.ext import CallbackContext, ApplicationHandlerStop
 from telegram import Update
 from bot.utility import variables as v
-from database.connection import get_async_db_session
-from database.user_crud import get_user_by_t_id, create_user
-from database.enums import UserStage
+from database.config.connection import get_async_db_session
+from database.repository.user_repository import get_user_by_t_id, create_user
+from database.model.enums import UserStage
 import requests
 from utility.config import CULLINAN_COOKIE_NAME
 

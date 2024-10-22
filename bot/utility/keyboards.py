@@ -1,5 +1,5 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from database.enums import UserStage
+from database.model.enums import UserStage
 
 
 # START COMMAND KEYBOARDS

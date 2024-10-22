@@ -1,8 +1,8 @@
 from telegram import Update
 from telegram.ext import CallbackContext
-from database.enums import UserStage
-from database.connection import get_async_db_session
-from database.user_crud import update_user
+from database.model.enums import UserStage
+from database.config.connection import get_async_db_session
+from database.repository.user_repository import update_user
 from bot.utility import keyboards as k, variables as v
 from bot.utility.texts import texts as t, get_profile_text
 

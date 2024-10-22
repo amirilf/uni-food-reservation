@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, BigInteger, String, Enum
-from database.connection import Base
-from database.enums import UserStage
+from database.config.connection import Base
+from database.model.enums import UserStage
 
 
 class User(Base):

@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.future import select
-from database.user_model import User
+from database.model.user import User
 
 
 async def create_user(db: AsyncSession, t_id: str) -> User | None:

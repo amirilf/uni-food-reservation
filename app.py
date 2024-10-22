@@ -1,7 +1,7 @@
 from utility import config, env, file
 from dotenv import load_dotenv
 from bot import bot
-from database.init_db import init_db
+from database.config.init_db import init_db
 
 
 def main():
