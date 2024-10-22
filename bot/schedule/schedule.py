@@ -3,6 +3,7 @@ from telegram.ext import Application
 from utility import env, config
 #=======================================
 
+
 async def bot_is_alive(context: CallbackContext):
     await context.bot.send_message(chat_id=env.ADMIN_ID, text=f"Bot is alive.")
 

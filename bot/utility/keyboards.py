@@ -1,6 +1,6 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from database.enums import UserStage
-#=======================================
+
 
 # START COMMAND KEYBOARDS
 s1_keyboard = [

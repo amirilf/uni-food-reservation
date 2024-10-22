@@ -6,6 +6,7 @@ from database.user_crud import update_user
 from bot.utility import keyboards as k, variables as v
 from bot.utility.texts import texts as t, get_profile_text
 
+
 #==> Query handlers
 async def main_handler(update: Update, context: CallbackContext) -> None:
     

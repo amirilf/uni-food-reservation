@@ -7,6 +7,7 @@ from database.enums import UserStage
 from core.account import auth as core_auth, profile as core_profile
 from utility.config import CULLINAN_COOKIE_NAME
 
+
 #========> Auth service methods
 async def save_profile_info(context: CallbackContext, t_id: int) -> None:
     """

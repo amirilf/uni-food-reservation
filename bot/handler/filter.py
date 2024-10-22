@@ -7,6 +7,7 @@ from database.enums import UserStage
 import requests
 from utility.config import CULLINAN_COOKIE_NAME
 
+
 #==> Filters
 async def check_user_context_data(update: Update, context: CallbackContext) -> None:
     """

@@ -3,6 +3,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.future import select
 from database.user_model import User
 
+
 async def create_user(db: AsyncSession, t_id: str) -> User | None:
     new_user = User(t_id=t_id)
     db.add(new_user)

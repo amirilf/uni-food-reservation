@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from utility.config import PROFILE_URL, PROFILE_IMAGE_URL
 from core.account.auth import get_page_or_exception
 
+
 def get_profile_information(session: requests.Session) -> dict[str, str] | Exception:
     """
     Extract user information including:

@@ -2,7 +2,8 @@ from cryptography.hazmat.primitives import serialization, padding, hashes
 import base64
 import hashlib
 from PIL import Image
-from core.utility.file import get_image_by_path
+from utility.file import get_image_by_path
+
 
 def get_image_hash(path: str) -> str:
     """

@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from bot import bot
 from database.init_db import init_db
 
+
 def main():
 
     # remove pycashe files

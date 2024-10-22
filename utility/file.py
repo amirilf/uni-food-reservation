@@ -3,6 +3,7 @@ import json
 import shutil
 from PIL import Image
 
+
 def remove_pycaches():
     current_directory = os.getcwd()
     for root, dirs, files in os.walk(current_directory):

@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from core.captcha.solve import solve_in_byte
 from utility.config import LOGIN_URL, CAPTCHA_URL, AUTH_SESSION_HEADER, PROFILE_URL
 
+
 def get_page_or_exception(session: requests.Session, url: str) -> requests.Response:
     """
     Fetch a page using the authenticated session. Raise an exception if the session is not authenticated.
