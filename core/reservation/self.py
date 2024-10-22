@@ -1,21 +1,7 @@
 import requests
-from enum import Enum
 from bs4 import BeautifulSoup, Tag
 from utility.config import SELF_URL, CULLINAN_COOKIE_NAME
-
-
-class SELF_PLACE(Enum):
-    SOLEYMAN_KHATER = 2
-    SHAHID_FAHMIDEH = 3
-    SHAHID_BAHONAR = 4
-    SHAHID_RAJAEI = 6
-    SHAHID_MOFATEH = 7
-    NIKAN_MANDEGAR = 8
-
-class MEAL_TIME(Enum):
-    BREAKFAST = "Breakfast"
-    LUNCH = "Lunch"
-    DINNER = "Dinner"
+from database.model.enums import SELF_PLACE, MEAL_TIME
 
 def get_self_page_response(session: requests.Session, next_week: bool = False) -> requests.Response:
     """Fetch & return current or next week page source"""

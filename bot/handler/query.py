@@ -5,7 +5,7 @@ from database.config.connection import get_async_db_session
 from database.repository.user_repository import update_user
 from bot.utility import keyboards as k, variables as v
 from bot.utility.texts import texts as t, get_profile_text
-from bot.service.self import update_self_program
+from bot.service.self import get_current_week_program
 
 #==> Query handlers
 async def main_handler(update: Update, context: CallbackContext) -> None:
@@ -157,8 +157,8 @@ async def self(update: Update, context: CallbackContext) -> None:
     await update.callback_query.edit_message_text(text=t["self"], reply_markup=k.self_keyboard)
 
 async def self_program(update: Update, context: CallbackContext) -> None:
-    result = await update_self_program(context)
-    await update.callback_query.edit_message_text(text=result if result else "Successfully done", reply_markup=k.get_back_keyboard("self"))
+    result = await get_current_week_program(context)
+    await update.callback_query.edit_message_text(text=result, reply_markup=k.get_back_keyboard("self"))
 
 async def setting(update: Update, context: CallbackContext) -> None:
     pass

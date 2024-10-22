@@ -12,5 +12,5 @@ CONTEXT_USER_USERNAME = "user_username"
 CONTEXT_USER_PASSWORD = "user_password"
 CONTEXT_USER_FULLNAME = "user_fullname"
 
-CONTEXT_USER_SELF_PROGRAM = "user_self_program"
-CONTEXT_USER_SELF_PROGRAM_UPDATE_TIME = "user_self_program_last_update_time"
+CONTEXT_USER_SELF_CURRENT_PROGRAM = "user_self_current_program"
+CONTEXT_USER_SELF_CURRENT_PROGRAM_UPDATE_TIME = "user_self_current_program_update_time"
