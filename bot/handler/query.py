@@ -17,8 +17,6 @@ async def main_handler(update: Update, context: CallbackContext) -> None:
             await start(update, context)
         case 'usage':
             await usage(update, context)
-        case 'self':
-            await self(update, context)
         case 'setting':
             await setting(update, context)
         case 'profile':
@@ -96,6 +94,25 @@ async def login_handler(update: Update, context: CallbackContext) -> None:
             # TODO: make these keys variables
             context.user_data[v.CONTEXT_NEXT_MESSAGE_LOGIN] = False
             await start(update, context)
+        case _:
+            raise Exception("Wrong query data: " + query.data)
+
+async def self_handler(update: Update, context: CallbackContext) -> None:
+    
+    query = update.callback_query
+    await query.answer()
+        
+    match query.data:
+        case 'self':
+            await self(update, context)
+        case "self_manual":
+            print("manual")
+        case "self_automatic":
+            print("auto")
+        case "self_program":
+            print("program")
+        case "self_priority":
+            print("priority")
         case _:
             raise Exception("Wrong query data: " + query.data)
 

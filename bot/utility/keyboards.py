@@ -58,12 +58,12 @@ terms_keyboard = InlineKeyboardMarkup([
 
 self_keyboard = InlineKeyboardMarkup([
     [
-        InlineKeyboardButton("✏️ رزرو دستی", callback_data="reservation_manual"),
-        InlineKeyboardButton("🤖 رزرو خودکار", callback_data="reservation_automatic")
+        InlineKeyboardButton("✏️ رزرو دستی", callback_data="self_manual"),
+        InlineKeyboardButton("🤖 رزرو خودکار", callback_data="self_automatic")
     ],
     [
-        InlineKeyboardButton("🗓 برنامه غذایی", callback_data="reservation_program"),
-        InlineKeyboardButton("🍾 لیست اولویت", callback_data="reservation_priority"),
+        InlineKeyboardButton("🗓 برنامه غذایی", callback_data="self_program"),
+        InlineKeyboardButton("🍾 لیست اولویت", callback_data="self_priority"),
     ],
     [InlineKeyboardButton("↩️ برگشت", callback_data="start")]
 ])
