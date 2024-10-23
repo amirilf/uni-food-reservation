@@ -157,8 +157,18 @@ async def self(update: Update, context: CallbackContext) -> None:
     await update.callback_query.edit_message_text(text=t["self"], reply_markup=k.self_keyboard)
 
 async def self_program(update: Update, context: CallbackContext) -> None:
-    result = await get_current_week_program(context)
-    await update.callback_query.edit_message_text(text=result, reply_markup=k.get_back_keyboard("self"))
+    error = await get_current_week_program(context)
+    
+    if error:
+        await update.callback_query.edit_message_text(text=error, reply_markup=k.get_back_keyboard("self"))
+    else:
+        img = context.user_data[v.CONTEXT_USER_SELF_CURRENT_PROGRAM]
+        await update.callback_query.message.delete()
+        await context.bot.send_photo(
+            chat_id=update.effective_chat.id,
+            photo=img,
+            reply_markup=k.get_back_keyboard("self")
+        )
 
 async def setting(update: Update, context: CallbackContext) -> None:
     pass
