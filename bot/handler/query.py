@@ -5,7 +5,9 @@ from database.config.connection import get_async_db_session
 from database.repository.user_repository import update_user
 from bot.utility import keyboards as k, variables as v
 from bot.utility.texts import texts as t, get_profile_text
-from bot.service.self import get_current_week_program
+from bot.service.self import get_current_self_program
+from utility.config import USER_MEDIA_PATH
+
 
 #==> Query handlers
 async def main_handler(update: Update, context: CallbackContext) -> None:
@@ -157,17 +159,26 @@ async def self(update: Update, context: CallbackContext) -> None:
     await update.callback_query.edit_message_text(text=t["self"], reply_markup=k.self_keyboard)
 
 async def self_program(update: Update, context: CallbackContext) -> None:
-    error = await get_current_week_program(context)
+
+    message = await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=f"لطفا کمی صبر کن...",
+    )
+
+    error = await get_current_self_program(context)
     
     if error:
-        await update.callback_query.edit_message_text(text=error, reply_markup=k.get_back_keyboard("self"))
+        await message.edit_text(text=error)
+        
     else:
-        img = context.user_data[v.CONTEXT_USER_SELF_CURRENT_PROGRAM]
-        await update.callback_query.message.delete()
-        await context.bot.send_photo(
+        await message.delete()
+        
+        photo_path = f"{USER_MEDIA_PATH}{context.user_data[v.CONTEXT_USER_T_ID]}.png"
+                
+        message = await context.bot.send_photo(
             chat_id=update.effective_chat.id,
-            photo=img,
-            reply_markup=k.get_back_keyboard("self")
+            photo=open(photo_path, 'rb'),
+            caption=f"last update: {context.user_data[v.CONTEXT_USER_SELF_CURRENT_PROGRAM_UPDATE_TIME].strftime('%Y/%m/%d %H:%M:%S')}",
         )
 
 async def setting(update: Update, context: CallbackContext) -> None:

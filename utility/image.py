@@ -16,7 +16,7 @@ def load_font(size):
         print("Font not found. Using default font.")
         return ImageFont.load_default()
 
-def generate_current_program_image(program) -> BytesIO:
+def generate_current_program_image(program) -> Image.Image:
     
     # [date, [[breakfast: [name, place, status]], [lunch: [...]], [dinner: []]]]
     
@@ -58,8 +58,4 @@ def generate_current_program_image(program) -> BytesIO:
             x += cell_widths[col_index]
         y += CELL_HEIGHT
 
-    byte_stream = BytesIO()
-    img.save(byte_stream, format='PNG')
-    byte_stream.seek(0)
-
-    return byte_stream
+    return img

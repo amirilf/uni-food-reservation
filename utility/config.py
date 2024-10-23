@@ -63,3 +63,6 @@ AUTH_SESSION_HEADER = {
 }
 
 CULLINAN_COOKIE_NAME = "ASP.NET_SessionId"
+
+# Media
+USER_MEDIA_PATH = "./media/"

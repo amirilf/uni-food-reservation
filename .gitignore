@@ -2,6 +2,7 @@
 **/tmp
 texts.py
 db.sqlite
+media/
 
 # Compiled
 __pycache__/
